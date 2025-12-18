@@ -13,28 +13,28 @@ function LandingPage() {
     const [darkMode, setDarkMode] = useState(false);
     const [currentSlide, setCurrentSlide] = useState(0);
 
-    // Load dark mode preference
+
     useEffect(() => {
         const savedTheme = localStorage.getItem("theme");
         if (savedTheme === "dark") {
-            document.documentElement.classList.add("dark");
             setDarkMode(true);
+        } else {
+            setDarkMode(false);
         }
     }, []);
 
-    // Toggle dark mode
-    const toggleDarkMode = () => {
+
+    useEffect(() => {
         if (darkMode) {
-            document.documentElement.classList.remove("dark");
-            localStorage.setItem("theme", "light");
-        } else {
             document.documentElement.classList.add("dark");
             localStorage.setItem("theme", "dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+            localStorage.setItem("theme", "light");
         }
-        setDarkMode(!darkMode);
-    };
+    }, [darkMode]);
 
-    // Auto slider
+
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentSlide((prev) => (prev + 1) % slides.length);
@@ -44,18 +44,18 @@ function LandingPage() {
 
     return (
         <div className="min-h-screen flex flex-col bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors">
-            {/* ================= NAVBAR ================= */}
+
             <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur border-b dark:border-gray-800">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                    {/* Logo */}
+
                     <h1 className="text-2xl font-extrabold tracking-tight">
-                        Ad<span className="text-blue-600">Connect</span>
+                        DealBridge<span className="text-blue-600">Connect</span>
                     </h1>
 
                     <div className="flex items-center gap-6">
-                        {/* Dark Mode Toggle */}
+
                         <button
-                            onClick={toggleDarkMode}
+                            onClick={() => setDarkMode(!darkMode)}
                             className="p-2 rounded-xl border dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
                         >
                             {darkMode ? <Sun size={18} /> : <Moon size={18} />}
@@ -98,9 +98,7 @@ function LandingPage() {
                         <div
                             key={index}
                             className={`absolute transition-all duration-700 ease-in-out text-lg font-semibold ${
-                                index === currentSlide
-                                    ? "opacity-100 translate-y-0"
-                                    : "opacity-0 translate-y-6"
+                                index === currentSlide ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
                             }`}
                         >
                             {text}
@@ -121,9 +119,8 @@ function LandingPage() {
                         </h2>
 
                         <p className="mt-8 text-lg text-gray-600 dark:text-gray-400">
-                            A next-generation advertising platform where individuals and
-                            businesses connect effortlessly. Post ads, find deals, and grow
-                            faster.
+                            A next-generation advertising platform where individuals and businesses
+                            connect effortlessly. Post ads, find deals, and grow faster.
                         </p>
 
                         <div className="mt-12 flex flex-col sm:flex-row gap-6 justify-center">
@@ -134,7 +131,7 @@ function LandingPage() {
                                 Get Started
                             </Link>
                             <Link
-                                to="/ads"
+                                to="/signup"
                                 className="px-10 py-4 rounded-2xl border border-gray-300 dark:border-gray-700 hover:border-blue-600 hover:text-blue-600 transition"
                             >
                                 Browse Ads
@@ -143,7 +140,7 @@ function LandingPage() {
                     </div>
                 </section>
 
-                {/* ================= FEATURES ================= */}
+
                 <section className="max-w-7xl mx-auto px-6 py-24 grid md:grid-cols-3 gap-12">
                     {[
                         {
@@ -163,19 +160,17 @@ function LandingPage() {
                             key={index}
                             className="p-10 rounded-3xl bg-white dark:bg-gray-900 shadow-xl hover:shadow-2xl transition"
                         >
-                            <h3 className="text-2xl font-bold mb-4 text-blue-600">
-                                {item.title}
-                            </h3>
+                            <h3 className="text-2xl font-bold mb-4 text-blue-600">{item.title}</h3>
                             <p className="text-gray-600 dark:text-gray-400">{item.desc}</p>
                         </div>
                     ))}
                 </section>
             </main>
 
-            {/* ================= FOOTER ================= */}
+
             <footer className="border-t dark:border-gray-800 bg-gray-50 dark:bg-gray-950">
                 <div className="text-center text-sm text-gray-500 py-6">
-                    © {new Date().getFullYear()} AdConnect. All rights reserved.
+                    © {new Date().getFullYear()} DealBridge. All rights reserved.
                 </div>
             </footer>
         </div>

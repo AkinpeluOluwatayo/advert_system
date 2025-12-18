@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Sun, Moon, LogOut } from "lucide-react";
+import { Sun, Moon, LogOut, User } from "lucide-react";
 
 function Dashboard() {
     const [darkMode, setDarkMode] = useState(false);
@@ -35,13 +35,12 @@ function Dashboard() {
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors">
-
             {/* ================= NAVBAR ================= */}
             <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur border-b dark:border-gray-800">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                     {/* Logo */}
                     <h1 className="text-2xl font-extrabold tracking-tight">
-                        Ad<span className="text-blue-600">Connect</span>
+                        DealBridge<span className="text-blue-600">Connect</span>
                     </h1>
 
                     <div className="flex items-center gap-5">
@@ -51,6 +50,15 @@ function Dashboard() {
                             className="p-2 rounded-xl border dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
                         >
                             {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+                        </button>
+
+                        {/* Profile */}
+                        <button
+                            onClick={() => navigate("/UserProfile")}
+                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition shadow"
+                        >
+                            <User size={16} />
+                            Profile
                         </button>
 
                         {/* Logout */}
@@ -100,7 +108,7 @@ function Dashboard() {
 
                     {/* CREATE ADVERT */}
                     <Link
-                        to="/create-ad"
+                        to="/CreateAdvert"
                         className="group p-12 rounded-3xl bg-white dark:bg-gray-900 border dark:border-gray-800 shadow-xl hover:shadow-2xl transition"
                     >
                         <h3 className="text-3xl font-bold mb-4 text-green-600">
@@ -121,7 +129,6 @@ function Dashboard() {
 
             {/* ================= FOOTER ================= */}
             <footer className="relative bg-gray-100 dark:bg-gray-900 border-t dark:border-gray-800 overflow-hidden">
-                {/* subtle animated gradient */}
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-transparent to-green-500/10 animate-pulse"></div>
 
                 <div className="relative max-w-7xl mx-auto px-6 py-12 text-center">
@@ -130,7 +137,7 @@ function Dashboard() {
                     </p>
 
                     <p className="mt-3 text-xs text-gray-500">
-                        © {new Date().getFullYear()} AdConnect. All rights reserved.
+                        © {new Date().getFullYear()} DealBridge. All rights reserved.
                     </p>
                 </div>
             </footer>
