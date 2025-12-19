@@ -1,105 +1,81 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
+import { useDispatch, useSelector } from "react-redux";
+import { signupUser, resetAuthState } from "../../../redux/actions/AuthSlice.js";
+import { Eye, EyeOff } from "lucide-react";
 
 function Signup() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { user, loading, error, isSuccess } = useSelector((state) => state.auth);
 
-    const [formData, setFormData] = useState({
-        email: "",
-        password: "",
-    });
-
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [formData, setFormData] = useState({ email: "", password: "" });
+    const [showPassword, setShowPassword] = useState(false);
     const [showToast, setShowToast] = useState(false);
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+    const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        setError("");
-        setShowToast(false);
-
         if (formData.password.length < 8) {
-            setError("Password must be at least 8 characters long");
+            alert("Password must be at least 8 characters");
             return;
         }
-
-        setLoading(true);
-
-        try {
-            const response = await axios.post(
-                "https://jsonplaceholder.typicode.com/users",
-                formData
-            );
-
-            if (response.status === 200 || response.status === 201) {
-                // Show toast
-                setShowToast(true);
-
-                // Navigate after short delay
-                setTimeout(() => navigate("/Dashboard"), 1500);
-            } else {
-                setError("Something went wrong. Please try again");
-            }
-        } catch (err) {
-            setError("Network connection error. Please try again");
-        } finally {
-            setLoading(false);
-        }
+        dispatch(signupUser(formData));
     };
 
+    useEffect(() => {
+        if (isSuccess) {
+            setShowToast(true);
+            const timer = setTimeout(() => {
+                setShowToast(false);
+                navigate("/dashboard");
+                dispatch(resetAuthState());
+            }, 1500);
+            return () => clearTimeout(timer);
+        }
+    }, [isSuccess, navigate, dispatch]);
+
     return (
-        <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 bg-gray-50 dark:bg-slate-900 transition-colors duration-300 relative">
-            {/* ================= TOAST ================= */}
+        <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 bg-gray-50 dark:bg-slate-900">
+            {/* TOAST */}
             <AnimatePresence>
                 {showToast && (
                     <motion.div
                         initial={{ opacity: 0, x: 50 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 50 }}
-                        transition={{ duration: 0.4 }}
-                        className="fixed top-6 right-6 bg-green-600 text-white px-6 py-3 rounded-xl shadow-xl z-50 flex items-center gap-3"
+                        className="fixed top-6 right-6 bg-green-600 text-white px-6 py-3 rounded-xl shadow-xl z-50"
                     >
                         Account created successfully
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            {/* ================= LEFT: TEXT OVERLAY ================= */}
-            <div className="hidden md:flex flex-col justify-start px-12 py-16">
-                <h3 className="text-4xl font-extrabold leading-tight text-blue-600 dark:text-blue-400">
-                    Join the Marketplace <br /> Connect & Grow
-                </h3>
-                <p className="mt-6 text-lg text-slate-600 dark:text-slate-300">
-                    Create your account to start posting ads, finding great deals, and
-                    growing your business effortlessly.
+            {/* LEFT: Marketing / Info Panel */}
+            <div className="hidden md:flex flex-col justify-center bg-blue-600 dark:bg-slate-900 text-white p-12 rounded-r-3xl">
+                <h3 className="text-4xl font-extrabold mb-4">Join the Marketplace</h3>
+                <p className="text-lg text-blue-100 dark:text-slate-300">
+                    Create your account to start posting ads, finding great deals, and growing your business effortlessly.
+                    Connect with millions of users worldwide.
                 </p>
             </div>
 
-            {/* ================= RIGHT: SIGNUP FORM ================= */}
-            <div className="flex items-center px-6">
-                <div className="bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-xl w-full max-w-md md:mr-24 transition-colors duration-300">
-                    <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-4">
-                        Get Started 👋
+            {/* RIGHT: SIGNUP FORM */}
+            <div className="flex items-center justify-center px-6 py-12">
+                <div className="bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-xl w-full max-w-md transition-colors duration-300">
+                    <h2 className="text-3xl font-extrabold mb-4 text-slate-900 dark:text-white">
+                        Create Account 👋
                     </h2>
-
                     <p className="text-slate-500 dark:text-slate-400 mb-8">
-                        Create your account to join our community
+                        Sign up to start your journey and manage your account.
                     </p>
 
-                    {error && (
-                        <p className="mt-2 text-red-500 text-sm font-medium">{error}</p>
-                    )}
-
                     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-                        {/* EMAIL */}
+                        {/* Email */}
                         <div className="flex flex-col">
-                            <label className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
+                            <label className="text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">
                                 Email Address
                             </label>
                             <input
@@ -107,70 +83,52 @@ function Signup() {
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
-                                placeholder="Enter email address"
-                                className="px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600
-                  bg-white dark:bg-slate-700 text-slate-900 dark:text-white
-                  placeholder-slate-400 focus:ring-2 focus:ring-blue-600 outline-none transition"
+                                placeholder="Enter your email"
+                                className="px-4 py-4 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-600 outline-none transition"
                                 required
                             />
                         </div>
 
-                        {/* PASSWORD */}
-                        <div className="flex flex-col">
-                            <label className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
+                        {/* Password with toggle */}
+                        <div className="flex flex-col relative">
+                            <label className="text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">
                                 Password
                             </label>
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 name="password"
                                 value={formData.password}
                                 onChange={handleChange}
-                                placeholder="Minimum 8 characters"
-                                className="px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600
-                  bg-white dark:bg-slate-700 text-slate-900 dark:text-white
-                  placeholder-slate-400 focus:ring-2 focus:ring-blue-600 outline-none transition"
+                                placeholder="Enter your password"
+                                className="px-4 py-4 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-600 outline-none transition pr-12"
                                 required
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-10 text-slate-500 dark:text-slate-300"
+                            >
+                                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                            </button>
                         </div>
 
-                        {/* BUTTON WITH SPINNER */}
+                        {/* Submit */}
                         <button
-                            type="submit"
                             disabled={loading}
-                            className="mt-2 bg-blue-600 text-white py-3 rounded-xl font-semibold
-                hover:bg-blue-700 transition-all duration-200 shadow-lg
-                flex items-center justify-center gap-3 disabled:opacity-70"
+                            className="bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition flex justify-center items-center gap-2"
                         >
-                            {loading ? (
-                                <>
-                                    <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                                    Creating...
-                                </>
-                            ) : (
-                                "Create Account"
-                            )}
+                            {loading ? "Creating..." : "Create Account"}
                         </button>
                     </form>
 
-                    {/* LINKS */}
-                    <div className="mt-8 text-sm text-slate-500 dark:text-slate-400">
-                        <p>
-                            Already have an account?{" "}
-                            <Link
-                                to="/login"
-                                className="text-blue-600 hover:text-blue-700 font-semibold"
-                            >
-                                Login
-                            </Link>
-                        </p>
-                        <p className="mt-2">
-                            <Link
-                                to="/forgot-password"
-                                className="text-blue-600 hover:text-blue-700 font-semibold"
-                            >
-                                Forgot password?
-                            </Link>
-                        </p>
+                    {error && <p className="text-red-500 mt-4">{error}</p>}
+
+                    {/* Footer links in white */}
+                    <div className="mt-6 text-sm flex flex-wrap items-center gap-2 text-white">
+                        <span>Already have an account?</span>
+                        <Link to="/login" className="font-semibold hover:underline">
+                            Login
+                        </Link>
                     </div>
                 </div>
             </div>

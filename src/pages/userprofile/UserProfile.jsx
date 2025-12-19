@@ -7,7 +7,7 @@ import { Edit2, Trash2, User } from "lucide-react";
 function UserProfile() {
     const dispatch = useDispatch();
     const { products, loading, error } = useSelector((state) => state.products);
-    const { user } = useSelector((state) => state.user); // logged-in user info
+    const { user } = useSelector((state) => state.auth); // logged-in user info
 
     useEffect(() => {
         dispatch(fetchProducts());
@@ -43,7 +43,7 @@ function UserProfile() {
                     <div className="flex items-center gap-6">
                         <User size={48} className="text-blue-600" />
                         <div>
-                            <h2 className="text-4xl font-extrabold">{user?.name || "Your Name"}</h2>
+                            <h2 className="text-4xl font-extrabold">{user?.name || "Profile"}</h2>
                             <p className="text-gray-600 dark:text-gray-400">{user?.email}</p>
                         </div>
                     </div>
