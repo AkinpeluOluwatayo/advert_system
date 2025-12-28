@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "../redux/actions/AuthSlice.js";
-import productsReducer from "./actions/ViewAllAdvertSlice";
+import authReducer from "./actions/AuthSlice";          // 👈 import auth slice
+import adsReducer from "./actions/AdvertSlice";         // your adverts slice
+import productReducer from "./actions/ProductSlice";    // single product slice
 
 export const store = configureStore({
     reducer: {
         auth: authReducer,
-        products: productsReducer,
+        ads: adsReducer,
+        product: productReducer,
     },
 });
 

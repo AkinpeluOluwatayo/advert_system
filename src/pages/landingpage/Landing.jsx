@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Sun, Moon } from "lucide-react";
 
 const slides = [
     "Advertise smarter. Reach more buyers.",
@@ -10,30 +9,7 @@ const slides = [
 
 function LandingPage() {
     const [open, setOpen] = useState(false);
-    const [darkMode, setDarkMode] = useState(false);
     const [currentSlide, setCurrentSlide] = useState(0);
-
-
-    useEffect(() => {
-        const savedTheme = localStorage.getItem("theme");
-        if (savedTheme === "dark") {
-            setDarkMode(true);
-        } else {
-            setDarkMode(false);
-        }
-    }, []);
-
-
-    useEffect(() => {
-        if (darkMode) {
-            document.documentElement.classList.add("dark");
-            localStorage.setItem("theme", "dark");
-        } else {
-            document.documentElement.classList.remove("dark");
-            localStorage.setItem("theme", "light");
-        }
-    }, [darkMode]);
-
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -53,13 +29,6 @@ function LandingPage() {
                     </h1>
 
                     <div className="flex items-center gap-6">
-
-                        <button
-                            onClick={() => setDarkMode(!darkMode)}
-                            className="p-2 rounded-xl border dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-                        >
-                            {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-                        </button>
 
                         {/* Account Dropdown */}
                         <div className="relative">
@@ -83,6 +52,12 @@ function LandingPage() {
                                         className="block px-5 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
                                     >
                                         Sign Up
+                                    </Link>
+                                    <Link
+                                        to="/adminAuth"
+                                        className="block px-5 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+                                    >
+                                        Admin
                                     </Link>
                                 </div>
                             )}
@@ -140,7 +115,6 @@ function LandingPage() {
                     </div>
                 </section>
 
-
                 <section className="max-w-7xl mx-auto px-6 py-24 grid md:grid-cols-3 gap-12">
                     {[
                         {
@@ -166,7 +140,6 @@ function LandingPage() {
                     ))}
                 </section>
             </main>
-
 
             <footer className="border-t dark:border-gray-800 bg-gray-50 dark:bg-gray-950">
                 <div className="text-center text-sm text-gray-500 py-6">

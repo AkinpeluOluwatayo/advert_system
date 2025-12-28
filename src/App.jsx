@@ -9,6 +9,8 @@ import ChatPage from "./pages/chatpage/Chat.jsx";
 import CreateAdvert from "./pages/createAdPage/CreateAdvert.jsx";
 import ForgotPassword from "./components/forgotpassword/ForgotPassword.jsx";
 import UserProfile from "./pages/userprofile/UserProfile.jsx";
+import AdminLogin from "./components/adminAuth/AdminLogin.jsx";
+import AdminDashboard from "./pages/adminpage/AdminDashboard.jsx";
 
 function App() {
     return (
@@ -17,13 +19,15 @@ function App() {
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
+                <Route path="/adminAuth" element={<AdminLogin />} />
+                <Route path="/adminPage" element={<AdminDashboard />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/ViewAllAds" element={<ViewAllAds />} />
                 <Route path="/ProductDetails/:id" element={<ProductDetails />} />
                 <Route path="/chat/:id" element={<ChatPage />} />
                 <Route path="/CreateAdvert" element={<CreateAdvert />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/UserProfile" element={<UserProfile />} />
+                <Route path="/userprofile" element={<UserProfile />} />
             </Routes>
         </Router>
     );

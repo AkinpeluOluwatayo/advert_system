@@ -1,103 +1,59 @@
-// src/services/authService.js
+import axios from "axios";
 
-const USERS_KEY = "users";
-const AUTH_KEY = "auth";
+const API_URL = "http://localhost:8080/auth";
 
-/* ------------------ HELPERS ------------------ */
-const getUsers = () => {
-    const users = localStorage.getItem(USERS_KEY);
-    return users ? JSON.parse(users) : [];
-};
-
-const saveUsers = (users) => {
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-};
-
-const saveAuth = (data) => {
-    localStorage.setItem(AUTH_KEY, JSON.stringify(data));
-};
-
-const getAuth = () => {
-    const auth = localStorage.getItem(AUTH_KEY);
-    return auth ? JSON.parse(auth) : null;
-};
-
-const clearAuth = () => {
-    localStorage.removeItem(AUTH_KEY);
-};
-
-/* ------------------ SERVICES ------------------ */
 export const authService = {
-    signup: async ({ email, password }) => {
-        const users = getUsers();
+    signup: async (data) => {
+        const response = await axios.post(`${API_URL}/register`, data);
 
-        const exists = users.find(
-            (u) => u.email.toLowerCase() === email.toLowerCase()
-        );
-
-        if (exists) {
-            throw new Error("User already exists");
+        if (response.data?.data) {
+            localStorage.setItem("auth", JSON.stringify(response.data.data));
         }
 
-        const newUser = {
-            id: Date.now(),
-            email,
-            password, // ⚠️ demo only
-            createdAt: new Date().toISOString(),
-        };
-
-        users.push(newUser);
-        saveUsers(users);
-
-        const authData = {
-            user: { id: newUser.id, email: newUser.email },
-            token: "fake-jwt-token",
-        };
-
-        saveAuth(authData);
-        return authData;
+        return response.data.data;
     },
 
-    login: async ({ email, password }) => {
-        const users = getUsers();
+    login: async (data) => {
+        const response = await axios.post(`${API_URL}/login`, data);
 
-        const user = users.find(
-            (u) =>
-                u.email.toLowerCase() === email.toLowerCase() &&
-                u.password === password
-        );
-
-        if (!user) {
-            throw new Error("Wrong email or password");
+        if (response.data?.data) {
+            localStorage.setItem("auth", JSON.stringify(response.data.data));
         }
 
-        const authData = {
-            user: { id: user.id, email: user.email },
-            token: "fake-jwt-token",
-        };
-
-        saveAuth(authData);
-        return authData;
+        return response.data.data;
     },
 
-    logout: async () => {
-        clearAuth();
-        return true;
-    },
+    adminLogin: async (data) => {
+        const response = await axios.post(`${API_URL}/admin/login`, data);
 
-    forgotPassword: async (email) => {
-        const users = getUsers();
-        const exists = users.find((u) => u.email === email);
-
-        if (!exists) {
-            throw new Error("Email not found");
+        if (response.data?.data) {
+            localStorage.setItem("adminAuth", JSON.stringify(response.data.data));
         }
 
-        // simulate email send
-        return true;
+        return response.data.data;
     },
 
     getCurrentAuth: () => {
-        return getAuth();
+        try {
+            return JSON.parse(localStorage.getItem("auth"));
+        } catch {
+            return null;
+        }
+    },
+
+    getCurrentAdminAuth: () => {
+        try {
+            return JSON.parse(localStorage.getItem("adminAuth"));
+        } catch {
+            return null;
+        }
+    },
+
+    logout: () => {
+        localStorage.removeItem("auth");
+    },
+
+    adminLogout: () => {
+        localStorage.removeItem("adminAuth");
     },
 };

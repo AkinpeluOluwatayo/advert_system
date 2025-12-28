@@ -1,61 +1,49 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// Fetch all products
-export const fetchProducts = createAsyncThunk(
-    "products/fetchAll",
-    async () => {
-        const res = await axios.get("https://dummyjson.com/products");
-        return res.data.products;
-    }
-);
+// Fetch a single advert for ProductDetails page
+export const fetchSingleAd = createAsyncThunk(
+    "product/fetchSingleAd",
+    async ({ id, token }) => {
+        const config = token
+            ? { headers: { Authorization: `Bearer ${token}` } }
+            : {};
 
-// Fetch single product
-export const fetchSingleProduct = createAsyncThunk(
-    "products/fetchOne",
-    async (id) => {
-        const res = await axios.get(`https://dummyjson.com/products/${id}`);
-        return res.data;
+        const res = await axios.get(`http://localhost:8080/ads/${id}`, config);
+        return res.data.data.ad;
     }
 );
 
 const productSlice = createSlice({
-    name: "products",
+    name: "product",
     initialState: {
-        products: [],
-        singleProduct: null,
+        singleAd: null,
         loading: false,
         error: null,
     },
+    reducers: {
+        resetSingleAd: (state) => {
+            state.singleAd = null;
+            state.loading = false;
+            state.error = null;
+        },
+    },
     extraReducers: (builder) => {
         builder
-            // All products
-            .addCase(fetchProducts.pending, (state) => {
+            .addCase(fetchSingleAd.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchProducts.fulfilled, (state, action) => {
+            .addCase(fetchSingleAd.fulfilled, (state, action) => {
                 state.loading = false;
-                state.products = action.payload;
+                state.singleAd = action.payload;
             })
-            .addCase(fetchProducts.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.error.message;
-            })
-
-            // Single product
-            .addCase(fetchSingleProduct.pending, (state) => {
-                state.loading = true;
-            })
-            .addCase(fetchSingleProduct.fulfilled, (state, action) => {
-                state.loading = false;
-                state.singleProduct = action.payload;
-            })
-            .addCase(fetchSingleProduct.rejected, (state, action) => {
+            .addCase(fetchSingleAd.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
             });
     },
 });
 
+export const { resetSingleAd } = productSlice.actions;
 export default productSlice.reducer;

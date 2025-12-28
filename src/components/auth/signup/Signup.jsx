@@ -10,7 +10,13 @@ function Signup() {
     const dispatch = useDispatch();
     const { user, loading, error, isSuccess } = useSelector((state) => state.auth);
 
-    const [formData, setFormData] = useState({ email: "", password: "" });
+    const [formData, setFormData] = useState({
+        email: "",
+        password: "",
+        address: "",
+        phoneNumber: "",
+        role: "",
+    });
     const [showPassword, setShowPassword] = useState(false);
     const [showToast, setShowToast] = useState(false);
 
@@ -110,6 +116,54 @@ function Signup() {
                             >
                                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                             </button>
+                        </div>
+
+                        {/* Address */}
+                        <div className="flex flex-col">
+                            <label className="text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">
+                                Address
+                            </label>
+                            <input
+                                type="text"
+                                name="address"
+                                value={formData.address}
+                                onChange={handleChange}
+                                placeholder="Enter your address"
+                                className="px-4 py-4 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-600 outline-none transition"
+                                required
+                            />
+                        </div>
+
+                        {/* Phone Number */}
+                        <div className="flex flex-col">
+                            <label className="text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">
+                                Phone Number
+                            </label>
+                            <input
+                                type="text"
+                                name="phoneNumber"
+                                value={formData.phoneNumber}
+                                onChange={handleChange}
+                                placeholder="Enter your phone number"
+                                className="px-4 py-4 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-600 outline-none transition"
+                                required
+                            />
+                        </div>
+
+                        {/* Role */}
+                        <div className="flex flex-col">
+                            <label className="text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">
+                                Role
+                            </label>
+                            <input
+                                type="text"
+                                name="role"
+                                value={formData.role}
+                                onChange={handleChange}
+                                placeholder="User or Admin"
+                                className="px-4 py-4 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-600 outline-none transition"
+                                required
+                            />
                         </div>
 
                         {/* Submit */}

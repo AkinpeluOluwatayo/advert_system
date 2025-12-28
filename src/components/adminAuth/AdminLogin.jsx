@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, Link } from "react-router-dom";
-import { loginUser, resetAuthState } from "../../../redux/actions/AuthSlice.js";
+import { useNavigate } from "react-router-dom";
+import { loginAdmin, resetAuthState } from "../../redux/actions/AuthSlice.js";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, ShieldCheck } from "lucide-react";
 
-function Login() {
+function AdminLogin() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const { user, token, loading, error } = useSelector(state => state.auth);
+    const { admin, adminToken, loading, error } = useSelector(state => state.auth);
 
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
@@ -23,33 +23,33 @@ function Login() {
             alert("Password must be at least 8 characters");
             return;
         }
-        dispatch(loginUser(formData));
+        dispatch(loginAdmin(formData));
     };
 
     useEffect(() => {
-        if (user && token) {
+        if (admin && adminToken) {
             setShowToast(true);
             const timer = setTimeout(() => {
                 setShowToast(false);
-                navigate("/dashboard");
+                navigate("/adminPage");
                 dispatch(resetAuthState());
             }, 1500);
             return () => clearTimeout(timer);
         }
-    }, [user, token, navigate, dispatch]);
+    }, [admin, adminToken, navigate, dispatch]);
 
     return (
-        <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 bg-gray-50 dark:bg-slate-900">
+        <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 bg-slate-100 dark:bg-slate-900">
             {/* TOAST */}
             <AnimatePresence>
                 {showToast && (
                     <motion.div
-                        initial={{ opacity: 0, x: 50 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 50 }}
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
                         className="fixed top-6 right-6 bg-green-600 text-white px-6 py-3 rounded-xl shadow-xl z-50"
                     >
-                        Login Successful
+                        Admin Login Successful
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -57,19 +57,24 @@ function Login() {
             {/* FORM */}
             <div className="flex items-center justify-center px-6 py-12">
                 <div className="bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-xl w-full max-w-md">
-                    <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-4">Welcome Back 👋</h2>
-                    <p className="text-slate-500 dark:text-slate-400 mb-8">Login to your account to manage your ads, profile, and enjoy all features.</p>
+                    <div className="flex items-center gap-3 mb-4">
+                        <ShieldCheck className="text-blue-600" size={28} />
+                        <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">Admin Portal</h2>
+                    </div>
+                    <p className="text-slate-500 dark:text-slate-400 mb-8">
+                        Login as an administrator to manage users, ads, and system settings.
+                    </p>
 
                     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
                         <div className="flex flex-col">
-                            <label className="text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">Email Address</label>
+                            <label className="text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">Admin Email</label>
                             <input
                                 type="email"
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
-                                placeholder="Enter your email"
-                                className="px-4 py-4 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-600 outline-none transition"
+                                placeholder="admin@example.com"
+                                className="px-4 py-4 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-600 outline-none"
                                 required
                             />
                         </div>
@@ -81,14 +86,14 @@ function Login() {
                                 name="password"
                                 value={formData.password}
                                 onChange={handleChange}
-                                placeholder="Enter your password"
+                                placeholder="Enter admin password"
                                 className="px-4 py-4 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white pr-12 focus:ring-2 focus:ring-blue-600 outline-none"
                                 required
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-10 text-slate-500 dark:text-slate-300"
+                                className="absolute right-3 top-10 text-slate-500"
                             >
                                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                             </button>
@@ -96,33 +101,26 @@ function Login() {
 
                         <button
                             disabled={loading}
-                            className="bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition flex justify-center items-center gap-2"
+                            className="bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition"
                         >
-                            {loading ? "Logging in..." : "Login"}
+                            {loading ? "Authenticating..." : "Login as Admin"}
                         </button>
                     </form>
 
-                    {error && <p className="text-red-500 mt-4">{error.message || error}</p>}
-
-                    <div className="mt-6 text-sm flex flex-wrap items-center gap-2 text-white">
-                        <span>Don't have an account?</span>
-                        <Link to="/signup" className="font-semibold hover:no-underline">Sign Up</Link>
-                        <span>|</span>
-                        <Link to="/forgot-password" className="font-semibold hover:no-underline">Forgot password?</Link>
-                    </div>
+                    {error && <p className="text-red-500 mt-4 text-sm">{error.message || error}</p>}
                 </div>
             </div>
 
             {/* RIGHT SIDE */}
-            <div className="hidden md:flex flex-col justify-center bg-blue-600 dark:bg-slate-900 text-white p-12 rounded-l-3xl">
-                <h3 className="text-4xl font-extrabold mb-4">Buy & Sell Anything</h3>
-                <p className="text-lg text-blue-100 dark:text-slate-300">
-                    Join our marketplace and connect with millions of users worldwide.
-                    Manage your account, post ads, and grow your business effortlessly.
+            <div className="hidden md:flex flex-col justify-center bg-slate-900 text-white p-12 rounded-l-3xl">
+                <h3 className="text-4xl font-extrabold mb-4">Administration Panel</h3>
+                <p className="text-lg text-slate-300">
+                    Secure access for administrators only. Monitor activity,
+                    manage users, ads, reports, and system configurations.
                 </p>
             </div>
         </div>
     );
 }
 
-export default Login;
+export default AdminLogin;
