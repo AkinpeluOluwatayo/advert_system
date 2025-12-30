@@ -1,21 +1,43 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { authService } from "../../services/AuthServices.js";
 
+// --- SIGNUP THUNK ---
 export const signupUser = createAsyncThunk("auth/signup", async (data, thunkAPI) => {
-    try { return await authService.signup(data); }
-    catch (err) { return thunkAPI.rejectWithValue(err.response?.data?.message || err.message); }
+    try {
+        return await authService.signup(data);
+    } catch (err) {
+        // Handle specific registration errors
+        const message = err.response?.data?.message || err.message;
+        return thunkAPI.rejectWithValue(message);
+    }
 });
 
+// --- USER LOGIN THUNK ---
 export const loginUser = createAsyncThunk("auth/login", async (data, thunkAPI) => {
-    try { return await authService.login(data); }
-    catch (err) { return thunkAPI.rejectWithValue(err.response?.data?.message || err.message); }
+    try {
+        return await authService.login(data);
+    } catch (err) {
+        // Intercept 401 Unauthorized for custom message
+        if (err.response && err.response.status === 401) {
+            return thunkAPI.rejectWithValue("Wrong Login details. Please try again.");
+        }
+        return thunkAPI.rejectWithValue(err.response?.data?.message || "Connection failed.");
+    }
 });
 
+// --- ADMIN LOGIN THUNK ---
 export const loginAdmin = createAsyncThunk("auth/adminLogin", async (data, thunkAPI) => {
-    try { return await authService.adminLogin(data); }
-    catch (err) { return thunkAPI.rejectWithValue(err.response?.data?.message || err.message); }
+    try {
+        return await authService.adminLogin(data);
+    } catch (err) {
+        if (err.response && err.response.status === 401) {
+            return thunkAPI.rejectWithValue("Invalid Admin credentials.");
+        }
+        return thunkAPI.rejectWithValue(err.response?.data?.message || "Admin login failed.");
+    }
 });
 
+// --- LOGOUT ACTIONS ---
 export const logoutUser = createAsyncThunk("auth/logoutUser", async (_, thunkAPI) => {
     authService.logout();
     thunkAPI.dispatch(fullLogout());
@@ -26,14 +48,11 @@ export const logoutAdmin = createAsyncThunk("auth/logoutAdmin", async (_, thunkA
     thunkAPI.dispatch(fullLogout());
 });
 
-const currentUserAuth = authService.getCurrentAuth();
-const currentAdminAuth = authService.getCurrentAdminAuth();
-
 const initialState = {
-    user: currentUserAuth?.user || null,
-    token: currentUserAuth?.token || null,
-    admin: currentAdminAuth?.admin || currentAdminAuth?.user || null,
-    adminToken: currentAdminAuth?.token || null,
+    user: authService.getCurrentAuth()?.user || null,
+    token: authService.getCurrentAuth()?.token || null,
+    admin: authService.getCurrentAdminAuth()?.admin || null,
+    adminToken: authService.getCurrentAdminAuth()?.token || null,
     loading: false,
     error: null,
     isSuccess: false,
@@ -61,9 +80,11 @@ const authSlice = createSlice({
         builder
             /* --- Signup --- */
             .addCase(signupUser.pending, (state) => { state.loading = true; state.error = null; })
-            .addCase(signupUser.fulfilled, (state) => {
+            .addCase(signupUser.fulfilled, (state, action) => {
                 state.loading = false;
                 state.isSuccess = true;
+                state.user = action.payload?.user;
+                state.token = action.payload?.token;
             })
             .addCase(signupUser.rejected, (state, action) => {
                 state.loading = false;
@@ -73,8 +94,8 @@ const authSlice = createSlice({
             .addCase(loginUser.pending, (state) => { state.loading = true; state.error = null; })
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.loading = false;
-                state.user = action.payload.user;
-                state.token = action.payload.token;
+                state.user = action.payload?.user;
+                state.token = action.payload?.token;
                 state.isSuccess = true;
                 state.error = null;
             })
@@ -82,47 +103,18 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-            /* --- Admin Login - FIXED FOR JAVA BACKEND --- */
-            .addCase(loginAdmin.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
+            /* --- Admin Login --- */
+            .addCase(loginAdmin.pending, (state) => { state.loading = true; state.error = null; })
             .addCase(loginAdmin.fulfilled, (state, action) => {
-                console.log("Admin Login Payload:", action.payload);
-
-                const adminData = action.payload.admin || action.payload.user || action.payload;
-                const adminToken = action.payload.token;
-
-                // FIX: Matching 'roles' from your Java admin.setRoles("ADMIN")
-                const rolesFromBackend = adminData?.roles;
-
-                let isAdmin = false;
-
-                if (Array.isArray(rolesFromBackend)) {
-                    // Check if "ADMIN" exists in the roles array
-                    isAdmin = rolesFromBackend.some(r => String(r).toUpperCase() === "ADMIN");
-                } else if (rolesFromBackend) {
-                    // Check the roles string directly
-                    isAdmin = String(rolesFromBackend).toUpperCase() === "ADMIN";
-                }
-
-                if (!isAdmin) {
-                    state.loading = false;
-                    state.error = "Unauthorized: Wrong Admin Credentials.";
-                    state.isSuccess = false;
-                    authService.adminLogout();
-                } else {
-                    state.loading = false;
-                    state.admin = adminData;
-                    state.adminToken = adminToken;
-                    state.isSuccess = true;
-                    state.error = null;
-                }
+                state.loading = false;
+                state.admin = action.payload?.admin || action.payload?.user;
+                state.adminToken = action.payload?.token;
+                state.isSuccess = true;
+                state.error = null;
             })
             .addCase(loginAdmin.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
-                state.isSuccess = false;
             });
     },
 });
