@@ -19,6 +19,33 @@ export const authService = {
         return response.data.data;
     },
 
+    // AuthServices.js
+
+
+        forgotPassword: async (email) => {
+            try {
+                // We wrap 'email' in an object to match the Map<String, String> on backend
+                const response = await axios.post(`${API_URL}/forgot-password`, { email });
+                return response.data;
+            } catch (error) {
+                // Throw the message so the Redux Thunk can catch it
+                throw error.response?.data?.message || "Server Error";
+            }
+        },
+
+        resetPassword: async (token, newPassword) => {
+            try {
+                // token goes in query param, newPassword goes in body
+                const response = await axios.post(`${API_URL}/reset-password?token=${token}`, {
+                    newPassword: newPassword
+                });
+                return response.data;
+            } catch (error) {
+                throw error.response?.data?.message || "Reset failed";
+            }
+        },
+   
+
     adminLogin: async (data) => {
         const response = await axios.post(`${API_URL}/admin/login`, data);
         if (response.data?.data) {
@@ -45,7 +72,7 @@ export const authService = {
 
     logout: () => {
         localStorage.removeItem("auth");
-        window.location.href = "/login"; // Force redirect and clear memory
+        window.location.href = "/login";
     },
 
     adminLogout: () => {

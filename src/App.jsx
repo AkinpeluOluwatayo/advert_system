@@ -11,6 +11,8 @@ import ViewAllAds from "./pages/viewAllAdPage/ViewAllAds.jsx";
 import Signup from "./components/auth/signup/Signup.jsx";
 import LandingPage from "./pages/landingpage/Landing.jsx";
 import Login from "./components/auth/login/Login.jsx";
+import ForgotPassword from "./components/forgotpassword/ForgotPassword.jsx";
+import ResetPassword from "./components/forgotpassword/ResetPassword.jsx";
 // ... (your other imports)
 
 // Protected Route Component
@@ -27,6 +29,8 @@ function App() {
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
+                <Route path="/forgotpassword" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/ViewAllAds" element={<ViewAllAds />} />
                 <Route path="/ProductDetails/:id" element={<ProductDetails />} />
 
