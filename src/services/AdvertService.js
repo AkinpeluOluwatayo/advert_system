@@ -8,7 +8,6 @@ export const advertServices = {
         const response = await axios.post(`${API_URL}/create`, data, {
             headers: { Authorization: `Bearer ${token}` },
         });
-        // Returns single ad object
         return response.data.data.ad;
     },
 
@@ -16,7 +15,6 @@ export const advertServices = {
         const response = await axios.get(`${API_URL}/${adId}`, {
             headers: { Authorization: `Bearer ${token}` },
         });
-        // Returns single ad object
         return response.data.data.ad;
     },
 
@@ -24,7 +22,6 @@ export const advertServices = {
         const response = await axios.get(`${API_URL}/user`, {
             headers: { Authorization: `Bearer ${token}` },
         });
-        // Returns array of ads
         return response.data.data.ads;
     },
 
@@ -32,7 +29,6 @@ export const advertServices = {
         const response = await axios.delete(`${API_URL}/delete/${adId}`, {
             headers: { Authorization: `Bearer ${token}` },
         });
-        // Returns single ad object
         return response.data.data.ad;
     },
 
@@ -45,7 +41,6 @@ export const advertServices = {
         if (filters.maxPrice) params.append('maxPrice', filters.maxPrice);
 
         const response = await axios.get(`${API_URL}/all?${params.toString()}`);
-        // Returns array of ads
         return response.data.data.ads;
     },
 };

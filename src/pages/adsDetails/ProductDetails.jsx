@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchSingleAd } from "../../redux/actions/ProductSlice";
+import { fetchSingleAd, resetSingleAd } from "../../redux/actions/ProductSlice"; // Added reset
 import { MapPin, MessageSquare, CreditCard, ArrowLeft } from "lucide-react";
 import { authService } from "../../services/AuthServices";
 
@@ -18,10 +18,16 @@ function ProductDetails() {
     const [paying, setPaying] = useState(false);
 
     useEffect(() => {
-        console.log("Fetching ad with ID:", id); // Debug log
         if (id) {
-            dispatch(fetchSingleAd({ id, token }));
+            // Trim and ensure the ID is clean before sending to Spring Boot
+            const cleanId = id.trim().replace(/[^0-9a-fA-F]/g, "");
+            dispatch(fetchSingleAd({ id: cleanId, token }));
         }
+
+        // Cleanup when leaving the page
+        return () => {
+            dispatch(resetSingleAd());
+        };
     }, [dispatch, id, token]);
 
     const handlePayment = () => {
@@ -61,54 +67,36 @@ function ProductDetails() {
         });
     };
 
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-950">
-                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-        );
-    }
+    if (loading) return (
+        <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-950">
+            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+    );
 
-    if (error) {
-        return (
-            <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-950">
-                <p className="text-red-500 text-xl mb-4">{error}</p>
-                <button
-                    onClick={() => navigate(-1)}
-                    className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
-                >
-                    Go Back
-                </button>
-            </div>
-        );
-    }
+    if (error) return (
+        <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-950">
+            <p className="text-red-500 text-xl mb-4">{error}</p>
+            <button onClick={() => navigate(-1)} className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition">
+                Go Back
+            </button>
+        </div>
+    );
 
-    if (!singleAd) {
-        return (
-            <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-950">
-                <p className="text-gray-400 text-xl mb-4">Advert not found</p>
-                <button
-                    onClick={() => navigate(-1)}
-                    className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
-                >
-                    Go Back
-                </button>
-            </div>
-        );
-    }
+    if (!singleAd) return (
+        <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-950">
+            <p className="text-gray-400 text-xl mb-4">Advert not found</p>
+            <button onClick={() => navigate(-1)} className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition">
+                Go Back
+            </button>
+        </div>
+    );
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-            {/* Header */}
             <div className="bg-white dark:bg-gray-900 border-b dark:border-gray-800">
                 <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
-                    <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">
-                        {singleAd.title}
-                    </h1>
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
-                    >
+                    <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">{singleAd.title}</h1>
+                    <button onClick={() => navigate(-1)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition">
                         <ArrowLeft size={18} />
                         Back
                     </button>
@@ -116,15 +104,10 @@ function ProductDetails() {
             </div>
 
             <div className="max-w-7xl mx-auto px-6 py-10 flex flex-col lg:flex-row gap-12">
-                {/* IMAGE SECTION */}
                 <div className="flex-1">
                     <div className="relative h-96 rounded-3xl overflow-hidden shadow-lg">
                         {singleAd.images?.[0] ? (
-                            <img
-                                src={singleAd.images[0]}
-                                alt={singleAd.title}
-                                className="w-full h-full object-cover"
-                            />
+                            <img src={singleAd.images[0]} alt={singleAd.title} className="w-full h-full object-cover" />
                         ) : (
                             <div className="w-full h-full bg-gray-800 flex items-center justify-center">
                                 <p className="text-gray-500">No Image</p>
@@ -135,60 +118,34 @@ function ProductDetails() {
                     {singleAd.images?.length > 1 && (
                         <div className="mt-6 flex gap-4 overflow-x-auto">
                             {singleAd.images.slice(1).map((img, idx) => (
-                                <img
-                                    key={idx}
-                                    src={img}
-                                    alt={`${singleAd.title}-${idx + 1}`}
-                                    className="w-32 h-32 object-cover rounded-2xl hover:scale-105 transition-transform cursor-pointer"
-                                />
+                                <img key={idx} src={img} alt={`${singleAd.title}-${idx + 1}`} className="w-32 h-32 object-cover rounded-2xl hover:scale-105 transition-transform cursor-pointer" />
                             ))}
                         </div>
                     )}
                 </div>
 
-                {/* PRODUCT DETAILS */}
                 <div className="flex-1 space-y-6">
-                    <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-                        {singleAd.title}
-                    </h2>
-
-                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                        {singleAd.description}
-                    </p>
-
-                    <p className="text-3xl font-bold text-blue-600">
-                        ₦{singleAd.price?.toLocaleString()}
-                    </p>
-
+                    <h2 className="text-3xl font-bold text-gray-900 dark:text-white">{singleAd.title}</h2>
+                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{singleAd.description}</p>
+                    <p className="text-3xl font-bold text-blue-600">₦{singleAd.price?.toLocaleString()}</p>
                     <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
                         <MapPin size={18} />
                         <span>{singleAd.location || "Nigeria"}</span>
                     </div>
-
                     <div className="pt-4 border-t border-gray-300 dark:border-gray-700">
                         <p className="text-sm text-gray-500 dark:text-gray-400">
                             Status: <span className="font-semibold text-green-600">{singleAd.status || "Available"}</span>
                         </p>
                     </div>
 
-                    {/* ACTION BUTTONS */}
                     <div className="flex flex-col sm:flex-row gap-4 pt-6">
-                        <button
-                            onClick={() => navigate(`/chat/${singleAd._id || id}`)}
-                            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition shadow justify-center"
-                        >
+                        {/* Changed to use singleAd.id which your Java Mapper provides */}
+                        <button onClick={() => navigate(`/chat/${singleAd.id || id}`)} className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition shadow justify-center">
                             <MessageSquare size={20} />
                             Chat with Seller
                         </button>
 
-                        <button
-                            onClick={handlePayment}
-                            disabled={paying}
-                            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition shadow justify-center
-                                ${paying
-                                ? "bg-gray-400 cursor-not-allowed"
-                                : "bg-green-600 hover:bg-green-700 text-white"}`}
-                        >
+                        <button onClick={handlePayment} disabled={paying} className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition shadow justify-center ${paying ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700 text-white"}`}>
                             <CreditCard size={20} />
                             {paying ? "Processing..." : "Purchase"}
                         </button>

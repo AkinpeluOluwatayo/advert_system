@@ -4,13 +4,26 @@ import axios from "axios";
 // Fetch a single advert for ProductDetails page
 export const fetchSingleAd = createAsyncThunk(
     "product/fetchSingleAd",
-    async ({ id, token }) => {
-        const config = token
-            ? { headers: { Authorization: `Bearer ${token}` } }
-            : {};
+    async ({ id, token }, { rejectWithValue }) => {
+        try {
+            const config = token
+                ? { headers: { Authorization: `Bearer ${token}` } }
+                : {};
 
-        const res = await axios.get(`http://localhost:8080/ads/${id}`, config);
-        return res.data.data.ad;
+            // Ensure ID has no hidden whitespace before hitting the API
+            const sanitizedId = id.toString().trim();
+            const res = await axios.get(`http://localhost:8080/ads/${sanitizedId}`, config);
+
+            // Backend: res.data (Axios) -> .data (Java ApiResponse) -> .ad (Map key)
+            if (res.data && res.data.data && res.data.data.ad) {
+                return res.data.data.ad;
+            } else {
+                return rejectWithValue("Advert data missing in server response");
+            }
+        } catch (err) {
+            // Return the specific error message from the backend (like "Invalid ID format")
+            return rejectWithValue(err.response?.data?.message || err.message);
+        }
     }
 );
 
@@ -40,7 +53,8 @@ const productSlice = createSlice({
             })
             .addCase(fetchSingleAd.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message;
+                // Using action.payload because we used rejectWithValue
+                state.error = action.payload || action.error.message;
             });
     },
 });
