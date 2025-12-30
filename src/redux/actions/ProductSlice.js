@@ -1,28 +1,33 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// Fetch a single advert for ProductDetails page
 export const fetchSingleAd = createAsyncThunk(
     "product/fetchSingleAd",
     async ({ id, token }, { rejectWithValue }) => {
         try {
+            if (!id) return rejectWithValue("Product ID is missing");
+
+            // STRICTOR SANITIZATION:
+            // 1. Convert to string and split at colon (removes :1)
+            // 2. replace(/[^a-fA-F0-9]/g, "") keeps ONLY Hexadecimal characters
+            const sanitizedId = id.toString().split(':')[0].replace(/[^a-fA-F0-9]/g, "").trim();
+
+            console.log("DEBUG: FINAL CLEAN ID ->", sanitizedId);
+
             const config = token
                 ? { headers: { Authorization: `Bearer ${token}` } }
                 : {};
 
-            // Ensure ID has no hidden whitespace before hitting the API
-            const sanitizedId = id.toString().trim();
             const res = await axios.get(`http://localhost:8080/ads/${sanitizedId}`, config);
 
-            // Backend: res.data (Axios) -> .data (Java ApiResponse) -> .ad (Map key)
             if (res.data && res.data.data && res.data.data.ad) {
                 return res.data.data.ad;
             } else {
                 return rejectWithValue("Advert data missing in server response");
             }
         } catch (err) {
-            // Return the specific error message from the backend (like "Invalid ID format")
-            return rejectWithValue(err.response?.data?.message || err.message);
+            const message = err.response?.data?.data?.message || err.response?.data?.message || err.message;
+            return rejectWithValue(message);
         }
     }
 );
@@ -50,11 +55,11 @@ const productSlice = createSlice({
             .addCase(fetchSingleAd.fulfilled, (state, action) => {
                 state.loading = false;
                 state.singleAd = action.payload;
+                state.error = null;
             })
             .addCase(fetchSingleAd.rejected, (state, action) => {
                 state.loading = false;
-                // Using action.payload because we used rejectWithValue
-                state.error = action.payload || action.error.message;
+                state.error = action.payload;
             });
     },
 });

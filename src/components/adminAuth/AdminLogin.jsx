@@ -3,53 +3,76 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { loginAdmin, resetAuthState } from "../../redux/actions/AuthSlice.js";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, EyeOff, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, ShieldCheck, AlertCircle, CheckCircle } from "lucide-react";
 
 function AdminLogin() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const { admin, adminToken, loading, error } = useSelector(state => state.auth);
+    const { admin, adminToken, loading, error, isSuccess } = useSelector(state => state.auth);
 
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
-    const [showToast, setShowToast] = useState(false);
+
+    // Updated toast state to handle message and type (success/error)
+    const [toast, setToast] = useState({ show: false, message: "", type: "" });
 
     const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
     const handleSubmit = (e) => {
         e.preventDefault();
         if (formData.password.length < 8) {
-            alert("Password must be at least 8 characters");
+            setToast({ show: true, message: "Password too short!", type: "error" });
             return;
         }
         dispatch(loginAdmin(formData));
     };
 
     useEffect(() => {
-        if (admin && adminToken) {
-            setShowToast(true);
+        // SUCCESS CASE
+        if (isSuccess && admin && adminToken) {
+            setToast({ show: true, message: "Admin Login Successful", type: "success" });
             const timer = setTimeout(() => {
-                setShowToast(false);
+                setToast({ show: false, message: "", type: "" });
                 navigate("/adminPage");
                 dispatch(resetAuthState());
             }, 1500);
             return () => clearTimeout(timer);
         }
-    }, [admin, adminToken, navigate, dispatch]);
+
+        // ERROR CASE
+        if (error) {
+            // Check if it's a 401 (Wrong credentials) or general error
+            const errorMessage = error.toString().includes("401")
+                ? "Wrong Admin Credentials"
+                : error;
+
+            setToast({ show: true, message: errorMessage, type: "error" });
+
+            const timer = setTimeout(() => {
+                setToast({ show: false, message: "", type: "" });
+                dispatch(resetAuthState());
+            }, 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [isSuccess, error, admin, adminToken, navigate, dispatch]);
 
     return (
-        <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 bg-slate-100 dark:bg-slate-900">
-            {/* TOAST */}
+        <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 bg-slate-100 dark:bg-slate-900 relative">
+
+            {/* DYNAMIC TOAST */}
             <AnimatePresence>
-                {showToast && (
+                {toast.show && (
                     <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        className="fixed top-6 right-6 bg-green-600 text-white px-6 py-3 rounded-xl shadow-xl z-50"
+                        initial={{ opacity: 0, y: -50, x: "-50%" }}
+                        animate={{ opacity: 1, y: 20, x: "-50%" }}
+                        exit={{ opacity: 0, y: -50, x: "-50%" }}
+                        className={`fixed top-0 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-2xl shadow-2xl z-50 flex items-center gap-3 text-white font-bold ${
+                            toast.type === "success" ? "bg-green-600" : "bg-red-600"
+                        }`}
                     >
-                        Admin Login Successful
+                        {toast.type === "success" ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
+                        {toast.message}
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -62,7 +85,7 @@ function AdminLogin() {
                         <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">Admin Portal</h2>
                     </div>
                     <p className="text-slate-500 dark:text-slate-400 mb-8">
-                        Login as an administrator to manage users, ads, and system settings.
+                        Login as an administrator to manage users and system settings.
                     </p>
 
                     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -74,7 +97,7 @@ function AdminLogin() {
                                 value={formData.email}
                                 onChange={handleChange}
                                 placeholder="admin@example.com"
-                                className="px-4 py-4 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-600 outline-none"
+                                className="px-4 py-4 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-600 outline-none transition"
                                 required
                             />
                         </div>
@@ -93,21 +116,20 @@ function AdminLogin() {
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-10 text-slate-500"
+                                className="absolute right-3 top-10 text-slate-500 hover:text-blue-600"
                             >
                                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                             </button>
                         </div>
 
                         <button
+                            type="submit"
                             disabled={loading}
-                            className="bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition"
+                            className="bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition disabled:bg-blue-400 shadow-lg shadow-blue-200"
                         >
                             {loading ? "Authenticating..." : "Login as Admin"}
                         </button>
                     </form>
-
-                    {error && <p className="text-red-500 mt-4 text-sm">{error.message || error}</p>}
                 </div>
             </div>
 

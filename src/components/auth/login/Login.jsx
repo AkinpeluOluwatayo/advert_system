@@ -9,7 +9,6 @@ function Login() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    // Added isSuccess here
     const { user, token, loading, error, isSuccess } = useSelector(state => state.auth);
 
     const [formData, setFormData] = useState({ email: "", password: "" });
@@ -24,14 +23,11 @@ function Login() {
     };
 
     useEffect(() => {
-        // FIXED LOGIC: Only redirect if isSuccess is true
-        // (meaning the user just clicked login and it worked)
         if (isSuccess && user && token) {
             setShowToast(true);
             const timer = setTimeout(() => {
                 setShowToast(false);
                 navigate("/dashboard");
-                // Clear success state so it doesn't auto-login next time
                 dispatch(resetAuthState());
             }, 1500);
             return () => clearTimeout(timer);
@@ -119,9 +115,14 @@ function Login() {
                 </div>
             </div>
 
-            <div className="hidden md:flex flex-col justify-center bg-blue-600 text-white p-12 rounded-l-3xl">
-                <h3 className="text-4xl font-extrabold mb-4">Buy & Sell Anything</h3>
-                <p className="text-lg text-blue-100">Connect with millions of users worldwide.</p>
+            {/* UPDATED SEGMENT: Removed bg-blue-600 and rounded-l-3xl */}
+            <div className="hidden md:flex flex-col justify-center p-12">
+                <h3 className="text-4xl font-extrabold mb-4 text-slate-900 dark:text-white">
+                    Buy & Sell Anything
+                </h3>
+                <p className="text-lg text-slate-600 dark:text-slate-400">
+                    Connect with millions of users worldwide.
+                </p>
             </div>
         </div>
     );

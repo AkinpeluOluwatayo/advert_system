@@ -18,12 +18,12 @@ export const loginAdmin = createAsyncThunk("auth/adminLogin", async (data, thunk
 
 export const logoutUser = createAsyncThunk("auth/logoutUser", async (_, thunkAPI) => {
     authService.logout();
-    thunkAPI.dispatch(resetAuthState());
+    thunkAPI.dispatch(fullLogout());
 });
 
 export const logoutAdmin = createAsyncThunk("auth/logoutAdmin", async (_, thunkAPI) => {
     authService.adminLogout();
-    thunkAPI.dispatch(resetAuthState());
+    thunkAPI.dispatch(fullLogout());
 });
 
 const currentUserAuth = authService.getCurrentAuth();
@@ -61,7 +61,7 @@ const authSlice = createSlice({
         builder
             /* --- Signup --- */
             .addCase(signupUser.pending, (state) => { state.loading = true; state.error = null; })
-            .addCase(signupUser.fulfilled, (state, action) => {
+            .addCase(signupUser.fulfilled, (state) => {
                 state.loading = false;
                 state.isSuccess = true;
             })
@@ -69,7 +69,7 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-            /* --- Login --- */
+            /* --- User Login --- */
             .addCase(loginUser.pending, (state) => { state.loading = true; state.error = null; })
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.loading = false;
@@ -82,11 +82,47 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-            /* --- Admin Login --- */
+            /* --- Admin Login - FIXED FOR JAVA BACKEND --- */
+            .addCase(loginAdmin.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
             .addCase(loginAdmin.fulfilled, (state, action) => {
-                state.admin = action.payload.admin || action.payload.user;
-                state.adminToken = action.payload.token;
-                state.isSuccess = true;
+                console.log("Admin Login Payload:", action.payload);
+
+                const adminData = action.payload.admin || action.payload.user || action.payload;
+                const adminToken = action.payload.token;
+
+                // FIX: Matching 'roles' from your Java admin.setRoles("ADMIN")
+                const rolesFromBackend = adminData?.roles;
+
+                let isAdmin = false;
+
+                if (Array.isArray(rolesFromBackend)) {
+                    // Check if "ADMIN" exists in the roles array
+                    isAdmin = rolesFromBackend.some(r => String(r).toUpperCase() === "ADMIN");
+                } else if (rolesFromBackend) {
+                    // Check the roles string directly
+                    isAdmin = String(rolesFromBackend).toUpperCase() === "ADMIN";
+                }
+
+                if (!isAdmin) {
+                    state.loading = false;
+                    state.error = "Unauthorized: Wrong Admin Credentials.";
+                    state.isSuccess = false;
+                    authService.adminLogout();
+                } else {
+                    state.loading = false;
+                    state.admin = adminData;
+                    state.adminToken = adminToken;
+                    state.isSuccess = true;
+                    state.error = null;
+                }
+            })
+            .addCase(loginAdmin.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+                state.isSuccess = false;
             });
     },
 });

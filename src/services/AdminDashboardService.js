@@ -1,0 +1,26 @@
+import axios from 'axios';
+
+const apiClient = axios.create({
+    baseURL: "http://localhost:8080",
+});
+
+apiClient.interceptors.request.use((config) => {
+    const adminAuth = JSON.parse(localStorage.getItem("adminAuth"));
+    if (adminAuth?.token) {
+        config.headers.Authorization = `Bearer ${adminAuth.token}`;
+    }
+    return config;
+});
+
+export const AdminService = {
+    // USER ENDPOINTS
+    getAllUsers: () => apiClient.get("/users/all"),
+    deleteUser: (id) => apiClient.delete(`/users/delete/${id}`),
+    updateUser: (id, data) => apiClient.put(`/users/update/${id}`, data),
+
+    // CATEGORY ENDPOINTS
+    getAllCategories: () => apiClient.get("/category/all"),
+    createCategory: (data) => apiClient.post("/category/create", data),
+    deleteCategory: (id) => apiClient.delete(`/category/delete/${id}`),
+    updateCategory: (id, data) => apiClient.put(`/category/update/${id}`, data), // Added this!
+};
