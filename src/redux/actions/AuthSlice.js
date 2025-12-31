@@ -1,109 +1,90 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { authService } from "../../services/AuthServices.js";
+import axios from "axios";
 
-// --- USER THUNKS ---
-export const signupUser = createAsyncThunk("auth/signup", async (data, thunkAPI) => {
-    try {
-        return await authService.signup(data);
-    } catch (err) {
-        // Improved error catching to handle the "User already exists" message
-        const message = err.response?.data?.data?.message || err.response?.data?.message || "Signup failed";
-        return thunkAPI.rejectWithValue(message);
+const AUTH_URL = "http://localhost:8080/auth";
+
+// 1. SIGNUP ACTION
+export const signupUser = createAsyncThunk(
+    "auth/signup",
+    async (userData, { rejectWithValue }) => {
+        try {
+            const response = await axios.post(`${AUTH_URL}/signup`, userData);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Signup Failed");
+        }
     }
-});
+);
 
-export const loginUser = createAsyncThunk("auth/login", async (data, thunkAPI) => {
-    try { return await authService.login(data); }
-    catch (err) { return thunkAPI.rejectWithValue(err.response?.data?.message || "Login failed"); }
-});
-
-export const loginAdmin = createAsyncThunk("auth/adminLogin", async (data, thunkAPI) => {
-    try { return await authService.adminLogin(data); }
-    catch (err) { return thunkAPI.rejectWithValue(err.response?.data?.message || "Admin Login failed"); }
-});
-
-export const forgotPasswordUser = createAsyncThunk("auth/forgotPassword", async (email, thunkAPI) => {
-    try { return await authService.forgotPassword(email); }
-    catch (err) { return thunkAPI.rejectWithValue(err.response?.data?.message || "Failed to send link"); }
-});
-
-export const resetPasswordUser = createAsyncThunk("auth/resetPassword", async ({ token, newPassword }, thunkAPI) => {
-    try { return await authService.resetPassword(token, newPassword); }
-    catch (err) { return thunkAPI.rejectWithValue(err.response?.data?.message || "Reset failed"); }
-});
-
-const initialState = {
-    user: authService.getCurrentAuth()?.user || null,
-    token: authService.getCurrentAuth()?.token || null,
-    admin: authService.getCurrentAdminAuth()?.admin || null,
-    adminToken: authService.getCurrentAdminAuth()?.token || null,
-    loading: false,
-    error: null,
-    isSuccess: false,
-};
+// 2. LOGIN ACTION
+export const loginUser = createAsyncThunk(
+    "auth/login",
+    async (userData, { rejectWithValue }) => {
+        try {
+            const response = await axios.post(`${AUTH_URL}/login`, userData);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Login Failed");
+        }
+    }
+);
 
 const authSlice = createSlice({
     name: "auth",
-    initialState,
+    initialState: {
+        user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null,
+        token: localStorage.getItem("token") || null,
+        loading: false,
+        error: null,
+        isSuccess: false,
+    },
     reducers: {
         resetAuthState: (state) => {
-            state.isSuccess = false;
-            state.error = null;
             state.loading = false;
+            state.error = null;
+            state.isSuccess = false;
         },
-        fullLogout: (state) => {
+        logout: (state) => {
             state.user = null;
             state.token = null;
-            state.admin = null;
-            state.adminToken = null;
-            state.isSuccess = false;
-            state.error = null;
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
         }
     },
     extraReducers: (builder) => {
         builder
-            // --- SIGNUP CASES (FIXED: Added these to handle successful registration) ---
-            .addCase(signupUser.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(signupUser.fulfilled, (state, action) => {
+            // SIGNUP
+            .addCase(signupUser.pending, (state) => { state.loading = true; state.error = null; })
+            .addCase(signupUser.fulfilled, (state) => {
                 state.loading = false;
-                state.isSuccess = true; // This will now trigger the redirect
-                state.error = null;
+                state.isSuccess = true;
             })
             .addCase(signupUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
-
-            // User Login Cases
+            // LOGIN
             .addCase(loginUser.pending, (state) => { state.loading = true; state.error = null; })
             .addCase(loginUser.fulfilled, (state, action) => {
-                state.loading = false; state.isSuccess = true;
-                state.user = action.payload?.user; state.token = action.payload?.token;
+                state.loading = false;
+                state.isSuccess = true;
+
+                const userData = action.payload.data?.user || action.payload.user;
+                const tokenData = action.payload.data?.token || action.payload.token;
+
+                if (tokenData) {
+                    state.user = userData;
+                    state.token = tokenData;
+                    localStorage.setItem("token", tokenData);
+                    localStorage.setItem("user", JSON.stringify(userData));
+                }
             })
-            .addCase(loginUser.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
-
-            // Admin Login Cases
-            .addCase(loginAdmin.pending, (state) => { state.loading = true; state.error = null; })
-            .addCase(loginAdmin.fulfilled, (state, action) => {
-                state.loading = false; state.isSuccess = true;
-                state.admin = action.payload?.admin; state.adminToken = action.payload?.token;
-            })
-            .addCase(loginAdmin.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
-
-            // Forgot Password Cases
-            .addCase(forgotPasswordUser.pending, (state) => { state.loading = true; state.error = null; })
-            .addCase(forgotPasswordUser.fulfilled, (state) => { state.loading = false; state.isSuccess = true; })
-            .addCase(forgotPasswordUser.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
-
-            // Reset Password Cases
-            .addCase(resetPasswordUser.pending, (state) => { state.loading = true; state.error = null; })
-            .addCase(resetPasswordUser.fulfilled, (state) => { state.loading = false; state.isSuccess = true; })
-            .addCase(resetPasswordUser.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
-    },
+            .addCase(loginUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
+    }
 });
 
-export const { resetAuthState, fullLogout } = authSlice.actions;
+export const { resetAuthState, logout } = authSlice.actions;
 export default authSlice.reducer;

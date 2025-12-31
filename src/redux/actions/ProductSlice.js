@@ -7,18 +7,24 @@ export const fetchSingleAd = createAsyncThunk(
         try {
             if (!id) return rejectWithValue("Product ID is missing");
 
-            // STRICTOR SANITIZATION:
-            // 1. Convert to string and split at colon (removes :1)
-            // 2. replace(/[^a-fA-F0-9]/g, "") keeps ONLY Hexadecimal characters
-            const sanitizedId = id.toString().split(':')[0].replace(/[^a-fA-F0-9]/g, "").trim();
+            // 1. Convert to string and strip anything after a colon (fixes :1 issues)
+            let sanitizedId = id.toString().split(':')[0];
+
+            // 2. Remove any characters that are not Hexadecimal (fixes %20 or hidden symbols)
+            sanitizedId = sanitizedId.replace(/[^a-fA-F0-9]/g, "").trim();
 
             console.log("DEBUG: FINAL CLEAN ID ->", sanitizedId);
 
-            const config = token
-                ? { headers: { Authorization: `Bearer ${token}` } }
-                : {};
+            const config = {
+                headers: {
+                    ...(token && { Authorization: `Bearer ${token}` }),
+                    "Content-Type": "application/json"
+                }
+            };
 
-            const res = await axios.get(`http://localhost:8080/ads/${sanitizedId}`, config);
+            // 3. Ensure no trailing slashes or colons in the final URL string
+            const url = `http://localhost:8080/ads/${sanitizedId}`;
+            const res = await axios.get(url, config);
 
             if (res.data && res.data.data && res.data.data.ad) {
                 return res.data.data.ad;
@@ -26,7 +32,11 @@ export const fetchSingleAd = createAsyncThunk(
                 return rejectWithValue("Advert data missing in server response");
             }
         } catch (err) {
-            const message = err.response?.data?.data?.message || err.response?.data?.message || err.message;
+            // Handle different error structures from your ApiResponse
+            const message = err.response?.data?.data?.message ||
+                err.response?.data?.message ||
+                err.message ||
+                "Failed to fetch product";
             return rejectWithValue(message);
         }
     }

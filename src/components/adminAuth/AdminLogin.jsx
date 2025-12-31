@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { loginAdmin, resetAuthState } from "../../redux/actions/AuthSlice.js";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, EyeOff, ShieldCheck, AlertCircle, CheckCircle } from "lucide-react";
+import { Eye, EyeOff, ShieldCheck, AlertCircle, CheckCircle, User } from "lucide-react";
 
 function AdminLogin() {
     const navigate = useNavigate();
@@ -13,8 +13,6 @@ function AdminLogin() {
 
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
-
-    // Updated toast state to handle message and type (success/error)
     const [toast, setToast] = useState({ show: false, message: "", type: "" });
 
     const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,7 +27,6 @@ function AdminLogin() {
     };
 
     useEffect(() => {
-        // SUCCESS CASE
         if (isSuccess && admin && adminToken) {
             setToast({ show: true, message: "Admin Login Successful", type: "success" });
             const timer = setTimeout(() => {
@@ -40,9 +37,7 @@ function AdminLogin() {
             return () => clearTimeout(timer);
         }
 
-        // ERROR CASE
         if (error) {
-            // Check if it's a 401 (Wrong credentials) or general error
             const errorMessage = error.toString().includes("401")
                 ? "Wrong Admin Credentials"
                 : error;
@@ -58,7 +53,27 @@ function AdminLogin() {
     }, [isSuccess, error, admin, adminToken, navigate, dispatch]);
 
     return (
+        // Main container must be relative
         <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 bg-slate-100 dark:bg-slate-900 relative">
+
+            {/* --- EXTREME FAR TOP RIGHT SHORTCUT --- */}
+            {/* Moved outside the grid columns to sit on the very edge of the screen */}
+            <div className="absolute top-4 right-4 z-[60]">
+                <Link to="/login">
+                    <motion.div
+                        whileHover={{ scale: 1.05, x: 2 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="group flex items-center gap-2 px-3 py-1.5 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border border-slate-200 dark:border-slate-700 rounded-full cursor-pointer hover:border-blue-600 hover:shadow-lg transition-all shadow-sm"
+                    >
+                        <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white group-hover:bg-slate-900 transition-colors">
+                            <User size={12} />
+                        </div>
+                        <span className="text-[10px] font-bold tracking-[0.15em] text-slate-500 group-hover:text-blue-600 font-sans uppercase">
+                            USER PORTAL
+                        </span>
+                    </motion.div>
+                </Link>
+            </div>
 
             {/* DYNAMIC TOAST */}
             <AnimatePresence>
@@ -77,46 +92,46 @@ function AdminLogin() {
                 )}
             </AnimatePresence>
 
-            {/* FORM */}
-            <div className="flex items-center justify-center px-6 py-12">
-                <div className="bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-xl w-full max-w-md">
+            {/* LEFT SIDE: FORM */}
+            <div className="flex items-center justify-center px-6 py-12 relative overflow-hidden">
+                <div className="bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-xl w-full max-w-md border border-white/20">
                     <div className="flex items-center gap-3 mb-4">
                         <ShieldCheck className="text-blue-600" size={28} />
-                        <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">Admin Portal</h2>
+                        <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Admin Portal</h2>
                     </div>
-                    <p className="text-slate-500 dark:text-slate-400 mb-8">
-                        Login as an administrator to manage users and system settings.
+                    <p className="text-slate-500 dark:text-slate-400 mb-8 font-sans">
+                        Secure access for administrators to manage system protocols.
                     </p>
 
-                    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-6 font-sans">
                         <div className="flex flex-col">
-                            <label className="text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">Admin Email</label>
+                            <label className="text-xs font-bold uppercase tracking-widest mb-2 text-slate-400">Admin Email</label>
                             <input
                                 type="email"
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
                                 placeholder="admin@example.com"
-                                className="px-4 py-4 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-600 outline-none transition"
+                                className="px-4 py-4 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-600 outline-none transition"
                                 required
                             />
                         </div>
 
                         <div className="flex flex-col relative">
-                            <label className="text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">Password</label>
+                            <label className="text-xs font-bold uppercase tracking-widest mb-2 text-slate-400">Master Password</label>
                             <input
                                 type={showPassword ? "text" : "password"}
                                 name="password"
                                 value={formData.password}
                                 onChange={handleChange}
-                                placeholder="Enter admin password"
-                                className="px-4 py-4 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white pr-12 focus:ring-2 focus:ring-blue-600 outline-none"
+                                placeholder="••••••••"
+                                className="px-4 py-4 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white pr-12 focus:ring-2 focus:ring-blue-600 outline-none"
                                 required
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-10 text-slate-500 hover:text-blue-600"
+                                className="absolute right-4 top-10 text-slate-400 hover:text-blue-600 transition-colors"
                             >
                                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                             </button>
@@ -125,7 +140,7 @@ function AdminLogin() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition disabled:bg-blue-400 shadow-lg shadow-blue-200"
+                            className="bg-blue-600 text-white py-4 rounded-xl font-bold uppercase tracking-widest hover:bg-blue-700 transition active:scale-[0.98] disabled:bg-blue-400 shadow-lg shadow-blue-100 dark:shadow-none mt-2"
                         >
                             {loading ? "Authenticating..." : "Login as Admin"}
                         </button>
@@ -133,13 +148,20 @@ function AdminLogin() {
                 </div>
             </div>
 
-            {/* RIGHT SIDE */}
-            <div className="hidden md:flex flex-col justify-center bg-slate-900 text-white p-12 rounded-l-3xl">
-                <h3 className="text-4xl font-extrabold mb-4">Administration Panel</h3>
-                <p className="text-lg text-slate-300">
-                    Secure access for administrators only. Monitor activity,
-                    manage users, ads, reports, and system configurations.
-                </p>
+            {/* RIGHT SIDE (DESKTOP ONLY) */}
+            <div className="hidden md:flex flex-col justify-center bg-slate-900 text-white p-16 rounded-l-[3rem] shadow-2xl">
+                <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.8 }}
+                >
+                    <h3 className="text-5xl font-extrabold mb-6 leading-tight">System <br/>Administration</h3>
+                    <div className="w-20 h-1 bg-blue-600 mb-8 rounded-full"></div>
+                    <p className="text-xl text-slate-400 font-light leading-relaxed max-w-sm">
+                        High-level access to library protocols, user registries,
+                        and inventory distribution cycles.
+                    </p>
+                </motion.div>
             </div>
         </div>
     );
