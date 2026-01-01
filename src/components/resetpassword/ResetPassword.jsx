@@ -10,7 +10,6 @@ function ResetPassword() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    // 1. Extract the token from the URL (?token=...)
     const token = searchParams.get("token");
 
     const { loading, error, isSuccess } = useSelector((state) => state.auth);
@@ -20,7 +19,6 @@ function ResetPassword() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // 2. Dispatch the token and the new password to Redux
         dispatch(resetPasswordUser({ token, newPassword: password }));
     };
 

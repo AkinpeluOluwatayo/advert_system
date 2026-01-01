@@ -69,7 +69,7 @@ function ViewAllAdverts() {
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors">
-            {/* NAVBAR */}
+
             <div className="bg-white dark:bg-gray-900 border-b dark:border-gray-800 sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
                     <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">
@@ -102,7 +102,7 @@ function ViewAllAdverts() {
             </div>
 
             <div className="max-w-7xl mx-auto px-6 py-10 flex flex-col lg:flex-row gap-8 relative">
-                {/* FILTER SIDEBAR */}
+
                 <aside className="relative flex-shrink-0">
                     <button
                         className="absolute -right-5 top-10 md:top-0 md:right-0 flex items-center justify-center w-10 h-10 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition z-20"
@@ -188,7 +188,7 @@ function ViewAllAdverts() {
                     </div>
                 </aside>
 
-                {/* ADVERT CARDS */}
+
                 <main className="flex-1">
                     {loading && (
                         <div className="flex justify-center items-center py-20">

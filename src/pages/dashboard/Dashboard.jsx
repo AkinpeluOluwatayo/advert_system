@@ -6,7 +6,7 @@ function Dashboard() {
     const [darkMode, setDarkMode] = useState(false);
     const navigate = useNavigate();
 
-    // Load dark mode preference
+
     useEffect(() => {
         const savedTheme = localStorage.getItem("theme");
         if (savedTheme === "dark") {
@@ -15,7 +15,7 @@ function Dashboard() {
         }
     }, []);
 
-    // Toggle dark mode
+
     const toggleDarkMode = () => {
         if (darkMode) {
             document.documentElement.classList.remove("dark");
@@ -27,7 +27,7 @@ function Dashboard() {
         setDarkMode(!darkMode);
     };
 
-    // Logout
+
     const handleLogout = () => {
         localStorage.clear();
         navigate("/");
@@ -35,16 +35,16 @@ function Dashboard() {
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors">
-            {/* ================= NAVBAR ================= */}
+
             <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur border-b dark:border-gray-800">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2">
-                    {/* Logo */}
+
                     <h1 className="text-lg sm:text-2xl font-extrabold tracking-tight truncate">
                         DealBridge<span className="text-blue-600">Connect</span>
                     </h1>
 
                     <div className="flex items-center gap-2 sm:gap-4">
-                        {/* Dark Mode */}
+
                         <button
                             onClick={toggleDarkMode}
                             className="p-2 rounded-xl border dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition flex-shrink-0"
@@ -53,7 +53,7 @@ function Dashboard() {
                             {darkMode ? <Sun size={16} className="sm:w-[18px] sm:h-[18px]" /> : <Moon size={16} className="sm:w-[18px] sm:h-[18px]" />}
                         </button>
 
-                        {/* Profile */}
+
                         <button
                             onClick={() => navigate("/UserProfile")}
                             className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-semibold hover:bg-blue-700 transition shadow flex-shrink-0"
@@ -62,7 +62,7 @@ function Dashboard() {
                             <span className="hidden xs:inline">Profile</span>
                         </button>
 
-                        {/* Logout */}
+
                         <button
                             onClick={handleLogout}
                             className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-xl bg-red-500 text-white text-xs sm:text-sm font-semibold hover:bg-red-600 transition shadow flex-shrink-0"
@@ -74,9 +74,8 @@ function Dashboard() {
                 </div>
             </header>
 
-            {/* ================= MAIN CONTENT ================= */}
             <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-16 md:py-24 w-full">
-                {/* Page Intro */}
+
                 <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-3 sm:mb-4 leading-tight">
                     Marketplace Dashboard
                 </h2>
@@ -86,9 +85,8 @@ function Dashboard() {
                     to start selling instantly.
                 </p>
 
-                {/* ACTION SECTIONS */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 md:gap-12">
-                    {/* VIEW ADVERTS */}
+
                     <Link
                         to="/ViewAllAds"
                         className="group p-6 sm:p-8 md:p-12 rounded-2xl sm:rounded-3xl bg-white dark:bg-gray-900 border dark:border-gray-800 shadow-lg sm:shadow-xl hover:shadow-2xl transition-all active:scale-[0.98]"
@@ -107,7 +105,6 @@ function Dashboard() {
                         </span>
                     </Link>
 
-                    {/* CREATE ADVERT */}
                     <Link
                         to="/CreateAdvert"
                         className="group p-6 sm:p-8 md:p-12 rounded-2xl sm:rounded-3xl bg-white dark:bg-gray-900 border dark:border-gray-800 shadow-lg sm:shadow-xl hover:shadow-2xl transition-all active:scale-[0.98]"
@@ -128,7 +125,7 @@ function Dashboard() {
                 </div>
             </main>
 
-            {/* ================= FOOTER ================= */}
+
             <footer className="relative bg-gray-100 dark:bg-gray-900 border-t dark:border-gray-800 overflow-hidden mt-auto">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-transparent to-green-500/10 animate-pulse"></div>
 

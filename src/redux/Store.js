@@ -9,7 +9,7 @@ export const store = configureStore({
         auth: authReducer,
         ads: adsReducer,
         product: productReducer,
-        chat: chatReducer, // 👈 Register it here
+        chat: chatReducer,
     },
 });
 

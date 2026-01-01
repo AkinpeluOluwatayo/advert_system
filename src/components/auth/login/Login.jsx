@@ -24,7 +24,7 @@ function Login() {
         dispatch(loginUser(formData));
     };
 
-    // Handle Success
+
     useEffect(() => {
         if (isSuccess && user && token) {
             setShowToast(true);
@@ -37,10 +37,9 @@ function Login() {
         }
     }, [isSuccess, user, token, navigate, dispatch]);
 
-    // Handle Error Toast - 👈 IMPROVED
     useEffect(() => {
         if (error) {
-            // Convert error codes to friendly messages
+
             let friendlyMessage = error;
 
             if (error.toString().includes("401")) {
@@ -69,7 +68,7 @@ function Login() {
     return (
         <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 bg-gray-50 dark:bg-slate-900 font-sans relative">
 
-            {/* ADMIN SHORTCUT */}
+
             <div className="absolute top-4 right-4 z-[60]">
                 <Link to="/adminauth">
                     <motion.div
@@ -87,7 +86,7 @@ function Login() {
                 </Link>
             </div>
 
-            {/* TOASTS */}
+
             <AnimatePresence>
                 {showToast && (
                     <motion.div
@@ -117,7 +116,7 @@ function Login() {
                 )}
             </AnimatePresence>
 
-            {/* LEFT SIDE: FORM */}
+
             <div className="flex items-center justify-center px-6 py-12 relative">
                 <div className="bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-xl w-full max-w-md border border-gray-100 dark:border-slate-700">
                     <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight">Welcome Back 👋</h2>
@@ -181,7 +180,6 @@ function Login() {
                 </div>
             </div>
 
-            {/* RIGHT SIDE: HERO */}
             <div className="hidden md:flex flex-col justify-center p-16 bg-white dark:bg-slate-900">
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}

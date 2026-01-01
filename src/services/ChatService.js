@@ -3,7 +3,7 @@ import axios from "axios";
 const CHAT_URL = "http://localhost:8080/chat";
 const MSG_URL = "http://localhost:8080/messages";
 
-// CRITICAL: This attaches your JWT to every request automatically
+
 axios.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem("token");
@@ -31,7 +31,7 @@ export const chatService = {
         return response.data;
     },
     sendMessage: async (messageRequest, senderId) => {
-        // Matches Java: @PostMapping("/send") @RequestParam("senderId")
+
         const response = await axios.post(`${MSG_URL}/send?senderId=${senderId}`, messageRequest);
         return response.data;
     },

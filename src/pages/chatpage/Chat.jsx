@@ -81,10 +81,10 @@ function ChatPage() {
         <div className="flex h-screen bg-white dark:bg-gray-950 overflow-hidden font-sans">
             <div className="flex-1 flex flex-col relative w-full max-w-4xl mx-auto border-x dark:border-gray-800 shadow-2xl">
 
-                {/* Header */}
+
                 <header className="px-4 py-3 border-b dark:border-gray-800 flex items-center justify-between bg-white/80 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-20">
                     <div className="flex items-center gap-3">
-                        {/* BACK ARROW - UPDATED TO WHITE COLOR */}
+
                         <button
                             onClick={() => navigate(-1)}
                             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-all group"
@@ -126,7 +126,7 @@ function ChatPage() {
                     </div>
                 </header>
 
-                {/* Messages Feed */}
+
                 <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/30 dark:bg-gray-950/30">
                     <AnimatePresence initial={false}>
                         {activeMessages.map((msg, idx) => {
@@ -156,7 +156,6 @@ function ChatPage() {
                     <div ref={messagesEndRef} />
                 </div>
 
-                {/* Quick Replies */}
                 <div className="px-4 py-2 flex gap-2 overflow-x-auto no-scrollbar border-t dark:border-gray-800 bg-white dark:bg-gray-900 sticky bottom-0">
                     <Sparkles size={16} className="text-blue-500 mt-1 shrink-0" />
                     {quickReplies.map((reply, i) => (
@@ -170,7 +169,7 @@ function ChatPage() {
                     ))}
                 </div>
 
-                {/* Footer Input Area */}
+
                 <footer className="p-4 bg-white dark:bg-gray-900 relative border-t dark:border-gray-800">
                     <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-4 py-1.5 rounded-2xl border dark:border-gray-700 focus-within:border-blue-400 transition-all shadow-inner">
                         <button
@@ -197,7 +196,7 @@ function ChatPage() {
                         </button>
                     </div>
 
-                    {/* Emoji Picker */}
+
                     <AnimatePresence>
                         {showEmojiPicker && (
                             <motion.div

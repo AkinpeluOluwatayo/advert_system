@@ -153,7 +153,7 @@ function Signup() {
                         </button>
                     </form>
 
-                    {/* NEW: ADDED LOGIN LINK BELOW THE FORM */}
+
                     <div className="mt-8 text-center text-sm text-slate-600 dark:text-slate-400">
                         Already have an account?{" "}
                         <Link

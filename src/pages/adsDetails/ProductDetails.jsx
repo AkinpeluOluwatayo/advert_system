@@ -44,16 +44,15 @@ function ProductDetails() {
         };
 
         try {
-            // This hits ChatSlice -> ChatService (which now has the token from localStorage)
+
             const result = await dispatch(createChat({ chatRequest, userId: currentUserId })).unwrap();
 
-            // Navigate using the ID returned from your Java ApiResponse
             const newChatId = result.data?.id || result.id;
             navigate(`/chat/${newChatId}`);
 
         } catch (err) {
             console.error("Chat initiation failed:", err);
-            // Backup navigation to the main chat list
+
             navigate(`/chat`);
         }
     };
@@ -97,7 +96,7 @@ function ProductDetails() {
 
     return (
         <div className="min-h-screen bg-white dark:bg-gray-950 pb-12">
-            {/* HEADER WITH WHITE ARROW FIX */}
+
             <div className="border-b dark:border-gray-800 sticky top-0 bg-gray-900 z-30 shadow-md">
                 <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
                     <button onClick={() => navigate(-1)} className="p-2 hover:bg-white/10 rounded-full transition">
@@ -111,7 +110,7 @@ function ProductDetails() {
             <div className="max-w-6xl mx-auto px-4 pt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
 
-                    {/* LEFT: IMAGE */}
+
                     <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800 border dark:border-gray-800">
                         <img
                             src={singleAd.images?.[0] || "https://via.placeholder.com/500"}
@@ -120,7 +119,6 @@ function ProductDetails() {
                         />
                     </div>
 
-                    {/* RIGHT: INFO */}
                     <div className="flex flex-col">
                         <div className="mb-4">
                             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">
@@ -148,7 +146,6 @@ function ProductDetails() {
                             </p>
                         </div>
 
-                        {/* BUTTONS */}
                         <div className="mt-auto grid grid-cols-2 gap-3">
                             <button
                                 onClick={handleStartChat}

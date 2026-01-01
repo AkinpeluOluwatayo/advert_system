@@ -16,15 +16,14 @@ function AdminDashboard() {
     const [error, setError] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
 
-    // Responsive State
+
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    // Modal Visibility States
     const [isUserEditOpen, setIsUserEditOpen] = useState(false);
     const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState("create");
 
-    // Form States
+
     const [selectedId, setSelectedId] = useState(null);
     const [userForm, setUserForm] = useState({
         roles: "", phoneNumber: "", address: "", isBlocked: false, isSuspended: false
@@ -122,7 +121,6 @@ function AdminDashboard() {
     return (
         <div className="flex min-h-screen bg-[#030712] text-gray-100 font-sans overflow-x-hidden">
 
-            {/* MOBILE SIDEBAR OVERLAY */}
             <AnimatePresence>
                 {isSidebarOpen && (
                     <motion.div
@@ -133,7 +131,6 @@ function AdminDashboard() {
                 )}
             </AnimatePresence>
 
-            {/* SIDEBAR (Desktop Fixed, Mobile Animated) */}
             <aside className={`
                 fixed inset-y-0 left-0 z-50 w-64 bg-[#030712] border-r border-gray-800/50 p-6 
                 transform transition-transform duration-300 md:translate-x-0 md:static md:flex flex-col
@@ -166,9 +163,8 @@ function AdminDashboard() {
                 </div>
             </aside>
 
-            {/* MAIN CONTENT */}
             <main className="flex-1 flex flex-col w-full min-w-0">
-                {/* HEADER */}
+
                 <header className="h-20 border-b border-gray-800/50 flex items-center justify-between px-4 md:px-8 bg-[#030712]/50 backdrop-blur-xl sticky top-0 z-30">
                     <div className="flex items-center gap-3">
                         <button onClick={() => setIsSidebarOpen(true)} className="md:hidden p-2 text-gray-400 hover:text-white"><Menu size={24} /></button>
@@ -183,7 +179,7 @@ function AdminDashboard() {
                         {activeTab === "categories" && (
                             <button onClick={() => openCategoryModal("create")} className="hidden sm:flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl font-bold transition-all text-xs sm:text-sm"><Plus size={18} /> New Category</button>
                         )}
-                        {/* Mobile New Category Button */}
+
                         {activeTab === "categories" && (
                             <button onClick={() => openCategoryModal("create")} className="sm:hidden p-2 bg-blue-600 rounded-xl text-white"><Plus size={20} /></button>
                         )}
@@ -191,14 +187,14 @@ function AdminDashboard() {
                 </header>
 
                 <div className="p-4 md:p-8">
-                    {/* STAT CARDS */}
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
                         <StatCard title={`Total ${activeTab}`} value={data.length} icon={activeTab === "users" ? <Users size={20}/> : <LayoutGrid size={20}/>} color="blue" />
                         <StatCard title="System Mode" value={activeTab.toUpperCase()} icon={<Shield size={20}/>} color="purple" />
                         <StatCard title="Status" value="Online" icon={<UserCheck size={20}/>} color="green" />
                     </div>
 
-                    {/* TABLE WITH SCROLL WRAPPER */}
+
                     <div className="bg-gray-900/30 border border-gray-800/50 rounded-2xl md:rounded-3xl overflow-hidden backdrop-blur-sm">
                         <div className="overflow-x-auto scrollbar-hide">
                             {loading ? (
@@ -246,7 +242,7 @@ function AdminDashboard() {
                 </div>
             </main>
 
-            {/* MODALS - Added full-screen mobile sizing */}
+
             <AnimatePresence>
                 {(isUserEditOpen || isCategoryModalOpen) && (
                     <div className="fixed inset-0 z-[60] flex items-center justify-center p-2 sm:p-4">
@@ -310,18 +306,18 @@ function AdminDashboard() {
     );
 }
 
-// Sidebar Link Component
+
 function SidebarLink({ icon, label, active, onClick }) {
     return <button onClick={onClick} className={`flex items-center gap-3 w-full p-4 rounded-2xl transition-all duration-300 ${active ? "bg-blue-600 text-white shadow-lg" : "text-gray-400 hover:bg-gray-800/50"}`}>{icon} <span className="font-semibold text-sm">{label}</span></button>;
 }
 
-// Stat Card Component
+
 function StatCard({ title, value, icon, color }) {
     const colors = { blue: "text-blue-400 bg-blue-400/10", purple: "text-purple-400 bg-purple-400/10", green: "text-emerald-400 bg-emerald-400/10" };
     return <div className="p-4 sm:p-6 bg-gray-900/40 border border-gray-800/50 rounded-2xl md:rounded-3xl shrink-0"><div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-4 border border-gray-800 ${colors[color]}`}>{icon}</div><p className="text-gray-500 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest">{title}</p><p className="text-xl sm:text-2xl font-bold mt-1 text-white">{value}</p></div>;
 }
 
-// Action Button Component
+
 function ActionButton({ icon, color = "blue", onClick }) {
     const colorClass = color === "red" ? "hover:bg-red-500/20 text-red-500" : "hover:bg-blue-500/20 text-blue-500";
     return <button onClick={onClick} className={`p-2 rounded-xl transition-all ${colorClass}`}>{icon}</button>;

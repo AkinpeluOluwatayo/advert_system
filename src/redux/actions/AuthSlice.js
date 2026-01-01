@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { authService } from "../../services/AuthServices.js";
 
-// 1. SIGNUP ACTION
+
 export const signupUser = createAsyncThunk(
     "auth/signup",
     async (userData, { rejectWithValue }) => {
@@ -13,7 +13,7 @@ export const signupUser = createAsyncThunk(
     }
 );
 
-// 2. LOGIN ACTION
+
 export const loginUser = createAsyncThunk(
     "auth/login",
     async (userData, { rejectWithValue }) => {
@@ -25,7 +25,7 @@ export const loginUser = createAsyncThunk(
     }
 );
 
-// 3. ADMIN LOGIN ACTION
+
 export const loginAdmin = createAsyncThunk(
     "auth/adminLogin",
     async (userData, { rejectWithValue }) => {
@@ -37,7 +37,6 @@ export const loginAdmin = createAsyncThunk(
     }
 );
 
-// 4. FORGOT PASSWORD ACTION
 export const forgotPasswordUser = createAsyncThunk(
     "auth/forgotPassword",
     async (email, { rejectWithValue }) => {
@@ -49,7 +48,6 @@ export const forgotPasswordUser = createAsyncThunk(
     }
 );
 
-// 5. RESET PASSWORD ACTION (Final Step) 👈 ADDED THIS
 export const resetPasswordUser = createAsyncThunk(
     "auth/resetPassword",
     async ({ token, newPassword }, { rejectWithValue }) => {
@@ -61,12 +59,12 @@ export const resetPasswordUser = createAsyncThunk(
     }
 );
 
-// 6. LOGOUT ACTION
+
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
     authService.logout();
 });
 
-// 7. ADMIN LOGOUT ACTION
+
 export const logoutAdmin = createAsyncThunk("auth/adminLogout", async () => {
     authService.adminLogout();
 });
@@ -93,7 +91,7 @@ const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // SIGNUP
+
             .addCase(signupUser.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -108,7 +106,7 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-            // LOGIN
+
             .addCase(loginUser.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -123,7 +121,7 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-            // ADMIN LOGIN
+
             .addCase(loginAdmin.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -138,7 +136,7 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-            // FORGOT PASSWORD
+
             .addCase(forgotPasswordUser.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -152,7 +150,7 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-            // RESET PASSWORD (Final Step) 👈 ADDED THIS
+
             .addCase(resetPasswordUser.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -166,13 +164,13 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-            // LOGOUT
+
             .addCase(logoutUser.fulfilled, (state) => {
                 state.user = null;
                 state.token = null;
                 state.isSuccess = false;
             })
-            // ADMIN LOGOUT
+
             .addCase(logoutAdmin.fulfilled, (state) => {
                 state.admin = null;
                 state.adminToken = null;

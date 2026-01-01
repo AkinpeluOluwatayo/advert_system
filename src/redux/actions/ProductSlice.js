@@ -7,10 +7,10 @@ export const fetchSingleAd = createAsyncThunk(
         try {
             if (!id) return rejectWithValue("Product ID is missing");
 
-            // 1. Convert to string and strip anything after a colon (fixes :1 issues)
+
             let sanitizedId = id.toString().split(':')[0];
 
-            // 2. Remove any characters that are not Hexadecimal (fixes %20 or hidden symbols)
+
             sanitizedId = sanitizedId.replace(/[^a-fA-F0-9]/g, "").trim();
 
             console.log("DEBUG: FINAL CLEAN ID ->", sanitizedId);
@@ -22,7 +22,7 @@ export const fetchSingleAd = createAsyncThunk(
                 }
             };
 
-            // 3. Ensure no trailing slashes or colons in the final URL string
+
             const url = `http://localhost:8080/ads/${sanitizedId}`;
             const res = await axios.get(url, config);
 
@@ -32,7 +32,7 @@ export const fetchSingleAd = createAsyncThunk(
                 return rejectWithValue("Advert data missing in server response");
             }
         } catch (err) {
-            // Handle different error structures from your ApiResponse
+
             const message = err.response?.data?.data?.message ||
                 err.response?.data?.message ||
                 err.message ||

@@ -24,30 +24,30 @@ function App() {
     return (
         <Router>
             <Routes>
-                {/* Public Routes */}
+
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/aboutus" element={<AboutUs />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
 
-                {/* --- FIXED PATHS --- */}
+
                 <Route path="/forgotpassword" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
-                {/* 👆 This now matches your email link location */}
+
 
                 <Route path="/ViewAllAds" element={<ViewAllAds />} />
                 <Route path="/ProductDetails/:id" element={<ProductDetails />} />
 
-                {/* Protected Routes */}
+
                 <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
                 <Route path="/CreateAdvert" element={<PrivateRoute><CreateAdvert /></PrivateRoute>} />
                 <Route path="/UserProfile" element={<PrivateRoute><UserProfile /></PrivateRoute>} />
 
-                {/* Chat Routes */}
+
                 <Route path="/chat" element={<PrivateRoute><ChatPage /></PrivateRoute>} />
                 <Route path="/chat/:chatId" element={<PrivateRoute><ChatPage /></PrivateRoute>} />
 
-                {/* Admin Routes */}
+
                 <Route path="/admin/login" element={<AdminLogin />} />
                 <Route path="/adminAuth" element={<AdminLogin />} />
                 <Route path="/adminPage" element={<AdminDashboard />} />

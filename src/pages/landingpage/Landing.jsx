@@ -30,7 +30,7 @@ function LandingPage() {
 
                     <div className="flex items-center gap-6">
 
-                        {/* Account Dropdown */}
+
                         <div className="relative">
                             <button
                                 onClick={() => setOpen(!open)}
@@ -66,7 +66,7 @@ function LandingPage() {
                 </div>
             </header>
 
-            {/* ================= SLIDER ================= */}
+
             <section className="bg-blue-600 py-6 text-white overflow-hidden">
                 <div className="relative h-8 flex items-center justify-center">
                     {slides.map((text, index) => (
@@ -82,7 +82,7 @@ function LandingPage() {
                 </div>
             </section>
 
-            {/* ================= HERO ================= */}
+
             <main className="flex-1">
                 <section className="relative flex items-center justify-center text-center px-6 py-40">
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 -z-10" />
@@ -98,7 +98,7 @@ function LandingPage() {
                             connect effortlessly. Post ads, find deals, and grow faster.
                         </p>
 
-                        {/* ================= THREE BUTTONS ================= */}
+
                         <div className="mt-12 flex flex-wrap gap-4 justify-center">
                             <Link
                                 to="/signup"

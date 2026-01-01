@@ -12,7 +12,7 @@ function UserProfile() {
     const reduxAuth = useSelector((state) => state.auth);
     const reduxAds = useSelector((state) => state.ads);
 
-    // Get token from Redux or LocalStorage to survive refresh
+
     const token = reduxAuth.token || authService.getCurrentAuth()?.token;
     const user = reduxAuth.user || authService.getCurrentAuth()?.user;
 
@@ -20,7 +20,7 @@ function UserProfile() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Fetch user ads logic
+
     useEffect(() => {
         if (!token) {
             setLoading(false);
@@ -43,14 +43,12 @@ function UserProfile() {
         fetchAds();
     }, [dispatch, token]);
 
-    // Sync Redux ads to local state
     useEffect(() => {
         if (reduxAds.ads) {
             setUserAds(reduxAds.ads);
         }
     }, [reduxAds.ads]);
 
-    // Handle Delete Logic
     const handleDelete = async (adId) => {
         if (window.confirm("Are you sure you want to delete this advert?")) {
             try {

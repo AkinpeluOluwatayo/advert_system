@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { advertServices } from "../../services/AdvertService.js";
 
-// Thunks
+
 export const createAd = createAsyncThunk(
     "ads/createAd",
     async ({ adData, token }, thunkAPI) => {

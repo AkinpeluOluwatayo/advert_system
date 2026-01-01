@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { chatService } from "../../services/ChatService";
 
-// Helper to handle error strings
+
 const getErrorMessage = (error) => error.response?.data?.message || error.message || "Something went wrong";
 
 export const createChat = createAsyncThunk(

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// Fetch all products
+
 export const fetchProducts = createAsyncThunk(
     "products/fetchAll",
     async () => {
@@ -10,7 +10,7 @@ export const fetchProducts = createAsyncThunk(
     }
 );
 
-// Fetch single product
+
 export const fetchSingleProduct = createAsyncThunk(
     "products/fetchOne",
     async (id) => {
@@ -29,7 +29,7 @@ const ViewAllAdvertSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // All products
+
             .addCase(fetchProducts.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -43,7 +43,7 @@ const ViewAllAdvertSlice = createSlice({
                 state.error = action.error.message;
             })
 
-            // Single product
+
             .addCase(fetchSingleProduct.pending, (state) => {
                 state.loading = true;
             })

@@ -7,7 +7,6 @@ const AboutUs = () => {
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-gray-950 font-serif overflow-hidden">
 
-            {/* --- Adjusted Hero Section (Reduced Height) --- */}
             <section className="relative h-[50vh] flex items-center justify-center bg-gray-900 text-white">
                 <div className="absolute inset-0 opacity-40 bg-[url('https://images.unsplash.com/photo-1449156006071-700994f79624?q=80&w=2000')] bg-cover bg-center mix-blend-overlay"></div>
                 <div className="absolute inset-0 bg-gradient-to-b from-blue-900/40 via-transparent to-gray-900"></div>
@@ -30,11 +29,10 @@ const AboutUs = () => {
                 </motion.div>
             </section>
 
-            {/* --- Founder Spotlight --- */}
+
             <section className="max-w-7xl mx-auto px-6 py-20">
                 <div className="grid lg:grid-cols-2 gap-16 items-center">
 
-                    {/* Presidential Founder Frame - FIXED POSITIONING */}
                     <motion.div
                         initial={{ opacity: 0, x: -50 }}
                         whileInView={{ opacity: 1, x: 0 }}
@@ -48,9 +46,7 @@ const AboutUs = () => {
                             <img
                                 src={Founder}
                                 alt="Akinpelu Oluwatayo"
-                                /* FIX: object-top ensures the head is not cut off.
-                                   h-[650px] gives more vertical space.
-                                */
+
                                 className="w-full h-[650px] object-cover object-top grayscale-[20%] group-hover:grayscale-0 transition-all duration-700"
                             />
                             <div className="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-gray-950 via-gray-900/90 to-transparent">
@@ -60,7 +56,7 @@ const AboutUs = () => {
                         </div>
                     </motion.div>
 
-                    {/* Mission Content */}
+
                     <motion.div
                         initial={{ opacity: 0, x: 50 }}
                         whileInView={{ opacity: 1, x: 0 }}
@@ -89,7 +85,7 @@ const AboutUs = () => {
                 </div>
             </section>
 
-            {/* --- Core Pillars Section --- */}
+
             <section className="bg-gray-900 py-24 text-white relative">
                 <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
                     <h2 className="text-3xl md:text-4xl font-bold mb-16 tracking-tight">Our <span className="text-blue-400 italic">Core Pillars</span></h2>
@@ -115,7 +111,7 @@ const AboutUs = () => {
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-blue-900/10 blur-[120px] rounded-full pointer-events-none"></div>
             </section>
 
-            {/* --- Footer Signature --- */}
+
             <footer className="py-12 border-t dark:border-gray-800 bg-white dark:bg-gray-950 text-center">
                 <p className="text-gray-500 text-[10px] uppercase font-sans tracking-[0.4em]">
                     © 2026 DealBridgeConnect · All Rights Reserved · Built for Excellence
