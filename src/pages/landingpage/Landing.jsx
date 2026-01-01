@@ -87,29 +87,38 @@ function LandingPage() {
                 <section className="relative flex items-center justify-center text-center px-6 py-40">
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 -z-10" />
 
-                    <div className="max-w-3xl">
+                    <div className="max-w-4xl">
                         <h2 className="text-5xl md:text-6xl font-extrabold leading-tight">
                             Buy & Sell <br />
                             <span className="text-blue-600">Anything, Anywhere</span>
                         </h2>
 
-                        <p className="mt-8 text-lg text-gray-600 dark:text-gray-400">
+                        <p className="mt-8 text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                             A next-generation advertising platform where individuals and businesses
                             connect effortlessly. Post ads, find deals, and grow faster.
                         </p>
 
-                        <div className="mt-12 flex flex-col sm:flex-row gap-6 justify-center">
+                        {/* ================= THREE BUTTONS ================= */}
+                        <div className="mt-12 flex flex-wrap gap-4 justify-center">
                             <Link
                                 to="/signup"
-                                className="px-10 py-4 rounded-2xl bg-blue-600 text-white font-semibold shadow-lg hover:bg-blue-700 transition"
+                                className="px-8 py-4 rounded-2xl bg-blue-600 text-white font-semibold shadow-lg hover:bg-blue-700 transition"
                             >
                                 Get Started
                             </Link>
+
                             <Link
                                 to="/signup"
-                                className="px-10 py-4 rounded-2xl border border-gray-300 dark:border-gray-700 hover:border-blue-600 hover:text-blue-600 transition"
+                                className="px-8 py-4 rounded-2xl border border-gray-300 dark:border-gray-700 hover:border-blue-600 hover:text-blue-600 bg-white dark:bg-gray-900 transition"
                             >
                                 Browse Ads
+                            </Link>
+
+                            <Link
+                                to="/AboutUs"
+                                className="px-8 py-4 rounded-2xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 font-semibold hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                            >
+                                About Us
                             </Link>
                         </div>
                     </div>

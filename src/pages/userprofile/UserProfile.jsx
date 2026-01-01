@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { User, Edit2, Trash2 } from "lucide-react";
-import { getAdsByUser } from "../../redux/actions/AdvertSlice";
+import { getAdsByUser, deleteAd } from "../../redux/actions/AdvertSlice.js";
 import { authService } from "../../services/AuthServices.js";
 
 function UserProfile() {
@@ -50,6 +50,18 @@ function UserProfile() {
         }
     }, [reduxAds.ads]);
 
+    // Handle Delete Logic
+    const handleDelete = async (adId) => {
+        if (window.confirm("Are you sure you want to delete this advert?")) {
+            try {
+                await dispatch(deleteAd({ adId, token })).unwrap();
+            } catch (err) {
+                console.error("Delete failed:", err);
+                alert("Failed to delete the advert.");
+            }
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex justify-center items-center min-h-screen bg-gray-950">
@@ -91,8 +103,15 @@ function UserProfile() {
                                 <p className="text-gray-300 mb-3 text-sm">{ad.description?.substring(0, 100)}...</p>
                                 <p className="font-bold text-green-500 text-xl mb-2">₦{ad.price?.toLocaleString()}</p>
                                 <div className="flex gap-3">
-                                    <button className="flex-1 bg-blue-600 p-2 rounded flex items-center justify-center gap-2"><Edit2 size={16}/> Edit</button>
-                                    <button className="flex-1 bg-red-600 p-2 rounded flex items-center justify-center gap-2"><Trash2 size={16}/> Delete</button>
+                                    <button className="flex-1 bg-blue-600 p-2 rounded flex items-center justify-center gap-2">
+                                        <Edit2 size={16}/> Edit
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(ad.id)}
+                                        className="flex-1 bg-red-600 p-2 rounded flex items-center justify-center gap-2"
+                                    >
+                                        <Trash2 size={16}/> Delete
+                                    </button>
                                 </div>
                             </div>
                         ))}

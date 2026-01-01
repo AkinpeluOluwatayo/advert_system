@@ -11,6 +11,7 @@ import CreateAdvert from "./pages/createAdPage/CreateAdvert.jsx";
 import UserProfile from "./pages/userprofile/UserProfile.jsx";
 import AdminLogin from "./components/adminAuth/AdminLogin.jsx";
 import AdminDashboard from "./pages/adminpage/AdminDashboard.jsx";
+import AboutUs from "./pages/aboutus/AboutUs.jsx";
 
 const PrivateRoute = ({ children }) => {
     const { token } = useSelector((state) => state.auth);
@@ -23,6 +24,7 @@ function App() {
             <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<LandingPage />} />
+                <Route path="/aboutus" element={<AboutUs />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/ViewAllAds" element={<ViewAllAds />} />
