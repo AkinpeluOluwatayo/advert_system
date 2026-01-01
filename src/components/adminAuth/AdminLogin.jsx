@@ -53,11 +53,7 @@ function AdminLogin() {
     }, [isSuccess, error, admin, adminToken, navigate, dispatch]);
 
     return (
-        // Main container must be relative
         <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 bg-slate-100 dark:bg-slate-900 relative">
-
-            {/* --- EXTREME FAR TOP RIGHT SHORTCUT --- */}
-            {/* Moved outside the grid columns to sit on the very edge of the screen */}
             <div className="absolute top-4 right-4 z-[60]">
                 <Link to="/login">
                     <motion.div
@@ -75,7 +71,6 @@ function AdminLogin() {
                 </Link>
             </div>
 
-            {/* DYNAMIC TOAST */}
             <AnimatePresence>
                 {toast.show && (
                     <motion.div
@@ -92,7 +87,6 @@ function AdminLogin() {
                 )}
             </AnimatePresence>
 
-            {/* LEFT SIDE: FORM */}
             <div className="flex items-center justify-center px-6 py-12 relative overflow-hidden">
                 <div className="bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-xl w-full max-w-md border border-white/20">
                     <div className="flex items-center gap-3 mb-4">
@@ -148,7 +142,6 @@ function AdminLogin() {
                 </div>
             </div>
 
-            {/* RIGHT SIDE (DESKTOP ONLY) */}
             <div className="hidden md:flex flex-col justify-center bg-slate-900 text-white p-16 rounded-l-[3rem] shadow-2xl">
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}

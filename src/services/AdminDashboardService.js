@@ -5,9 +5,14 @@ const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use((config) => {
-    const adminAuth = JSON.parse(localStorage.getItem("adminAuth"));
-    if (adminAuth?.token) {
-        config.headers.Authorization = `Bearer ${adminAuth.token}`;
+    const adminToken = localStorage.getItem("adminToken");
+    const admin = JSON.parse(localStorage.getItem("admin"));
+
+    console.log("🔑 Admin Token:", adminToken);
+    console.log("👤 Admin User:", admin);
+
+    if (adminToken) {
+        config.headers.Authorization = `Bearer ${adminToken}`;
     }
     return config;
 });
@@ -22,5 +27,5 @@ export const AdminService = {
     getAllCategories: () => apiClient.get("/category/all"),
     createCategory: (data) => apiClient.post("/category/create", data),
     deleteCategory: (id) => apiClient.delete(`/category/delete/${id}`),
-    updateCategory: (id, data) => apiClient.put(`/category/update/${id}`, data), // Added this!
+    updateCategory: (id, data) => apiClient.put(`/category/update/${id}`, data),
 };

@@ -1,89 +1,99 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const AUTH_URL = "http://localhost:8080/auth";
+const API_URL = "http://localhost:8080/auth";
 
-// 1. SIGNUP ACTION (The missing piece)
-export const signupUser = createAsyncThunk(
-    "auth/signup",
-    async (userData, { rejectWithValue }) => {
-        try {
-            const response = await axios.post(`${AUTH_URL}/signup`, userData);
-            return response.data; // Assuming your Java API returns ApiResponse with data
-        } catch (error) {
-            return rejectWithValue(error.response?.data?.message || "Signup Failed");
+export const authService = {
+    signup: async (data) => {
+        const response = await axios.post(`${API_URL}/register`, data);
+
+        if (response.data?.data) {
+            const { user, token } = response.data.data;
+            localStorage.setItem("token", token);
+            localStorage.setItem("user", JSON.stringify(user));
         }
-    }
-);
 
-// 2. LOGIN ACTION
-export const loginUser = createAsyncThunk(
-    "auth/login",
-    async (userData, { rejectWithValue }) => {
+        return response.data.data;
+    },
+
+    login: async (data) => {
+        const response = await axios.post(`${API_URL}/login`, data);
+
+        if (response.data?.data) {
+            const { user, token } = response.data.data;
+            localStorage.setItem("token", token);
+            localStorage.setItem("user", JSON.stringify(user));
+        }
+
+        return response.data.data;
+    },
+
+    forgotPassword: async (email) => {
         try {
-            const response = await axios.post(`${AUTH_URL}/login`, userData);
+            const response = await axios.post(`${API_URL}/forgot-password`, { email });
             return response.data;
         } catch (error) {
-            return rejectWithValue(error.response?.data?.message || "Login Failed");
-        }
-    }
-);
-
-const authSlice = createSlice({
-    name: "auth",
-    initialState: {
-        user: JSON.parse(localStorage.getItem("user")) || null,
-        token: localStorage.getItem("token") || null,
-        loading: false,
-        error: null,
-        isSuccess: false,
-    },
-    reducers: {
-        resetAuthState: (state) => {
-            state.loading = false;
-            state.error = null;
-            state.isSuccess = false;
-        },
-        logout: (state) => {
-            state.user = null;
-            state.token = null;
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
+            throw error.response?.data?.message || "Server Error";
         }
     },
-    extraReducers: (builder) => {
-        builder
-            // Handle Signup
-            .addCase(signupUser.pending, (state) => { state.loading = true; })
-            .addCase(signupUser.fulfilled, (state, action) => {
-                state.loading = false;
-                state.isSuccess = true;
-            })
-            .addCase(signupUser.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
-            // Handle Login
-            .addCase(loginUser.pending, (state) => { state.loading = true; })
-            .addCase(loginUser.fulfilled, (state, action) => {
-                state.loading = false;
-                state.isSuccess = true;
 
-                const userData = action.payload.data?.user || action.payload.user;
-                const tokenData = action.payload.data?.token || action.payload.token;
-
-                state.user = userData;
-                state.token = tokenData;
-
-                localStorage.setItem("token", tokenData);
-                localStorage.setItem("user", JSON.stringify(userData));
-            })
-            .addCase(loginUser.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
+    resetPassword: async (token, newPassword) => {
+        try {
+            const response = await axios.post(`${API_URL}/reset-password?token=${token}`, {
+                newPassword: newPassword
             });
-    }
-});
+            return response.data;
+        } catch (error) {
+            throw error.response?.data?.message || "Reset failed";
+        }
+    },
 
-export const { resetAuthState, logout } = authSlice.actions;
-export default authSlice.reducer;
+    adminLogin: async (data) => {
+        const response = await axios.post(`${API_URL}/admin/login`, data);
+
+        if (response.data?.data) {
+            const { admin, token, user } = response.data.data;
+            localStorage.setItem("adminToken", token);
+            localStorage.setItem("admin", JSON.stringify(admin || user));
+        }
+
+        return response.data.data;
+    },
+
+    getCurrentAuth: () => {
+        try {
+            const token = localStorage.getItem("token");
+            const user = JSON.parse(localStorage.getItem("user"));
+
+            if (token && user) {
+                return { token, user };
+            }
+            return null;
+        } catch {
+            return null;
+        }
+    },
+
+    getCurrentAdminAuth: () => {
+        try {
+            const token = localStorage.getItem("adminToken");
+            const admin = JSON.parse(localStorage.getItem("admin"));
+
+            if (token && admin) {
+                return { token, user: admin };
+            }
+            return null;
+        } catch {
+            return null;
+        }
+    },
+
+    logout: () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+    },
+
+    adminLogout: () => {
+        localStorage.removeItem("adminToken");
+        localStorage.removeItem("admin");
+    },
+};

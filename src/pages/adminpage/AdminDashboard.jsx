@@ -28,18 +28,20 @@ function AdminDashboard() {
     });
     const [categoryForm, setCategoryForm] = useState({ name: "", description: "" });
 
-    const adminAuth = JSON.parse(localStorage.getItem("adminAuth"));
-    const adminUser = adminAuth?.admin || adminAuth?.user;
+    // ✅ FIXED: Changed from adminAuth to adminToken and admin
+    const adminToken = localStorage.getItem("adminToken");
+    const adminUser = JSON.parse(localStorage.getItem("admin"));
 
     useEffect(() => {
-        if (!adminAuth?.token || adminUser?.roles !== "ADMIN") {
+        if (!adminToken || adminUser?.roles !== "ADMIN") {
             navigate("/admin/login", { replace: true });
         }
-    }, [adminAuth, adminUser, navigate]);
+    }, [adminToken, adminUser, navigate]);
 
-    // Logout Functionality
+    // ✅ FIXED: Logout Functionality
     const handleLogout = () => {
-        localStorage.removeItem("adminAuth");
+        localStorage.removeItem("adminToken");
+        localStorage.removeItem("admin");
         navigate("/", { replace: true });
     };
 
@@ -133,7 +135,7 @@ function AdminDashboard() {
                     </nav>
                 </div>
 
-                {/* LOGOUT BUTTON - INTEGRATED HERE */}
+                {/* LOGOUT BUTTON */}
                 <div className="pt-6 border-t border-gray-800/50">
                     <button
                         onClick={handleLogout}
@@ -217,7 +219,7 @@ function AdminDashboard() {
                 </div>
             </main>
 
-            {/* MODALS REMAIN THE SAME AS PREVIOUS VERSION */}
+            {/* USER EDIT MODAL */}
             <AnimatePresence>
                 {isUserEditOpen && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -233,21 +235,21 @@ function AdminDashboard() {
                                         </select>
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-bold text-gray-500 uppercase px-1 text-white">Phone</label>
+                                        <label className="text-[10px] font-bold text-gray-500 uppercase px-1">Phone</label>
                                         <input value={userForm.phoneNumber} onChange={(e) => setUserForm({...userForm, phoneNumber: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-xl p-3 text-white outline-none" />
                                     </div>
                                 </div>
-                                <div className="space-y-1 text-white">
+                                <div className="space-y-1">
                                     <label className="text-[10px] font-bold text-gray-500 uppercase px-1">Address</label>
-                                    <textarea value={userForm.address} onChange={(e) => setUserForm({...userForm, address: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-xl p-3 h-20 outline-none" />
+                                    <textarea value={userForm.address} onChange={(e) => setUserForm({...userForm, address: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-xl p-3 h-20 text-white outline-none" />
                                 </div>
                                 <div className="bg-red-500/5 border border-red-500/10 rounded-2xl p-4 space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <div><p className="text-sm font-bold text-white">Suspend Account</p><p className="text-[10px] text-gray-500 text-white">Temporary lock</p></div>
+                                        <div><p className="text-sm font-bold text-white">Suspend Account</p><p className="text-[10px] text-gray-500">Temporary lock</p></div>
                                         <input type="checkbox" checked={userForm.isSuspended} onChange={(e) => setUserForm({...userForm, isSuspended: e.target.checked})} className="w-5 h-5 accent-orange-500" />
                                     </div>
-                                    <div className="flex items-center justify-between text-white">
-                                        <div><p className="text-sm font-bold">Block Permanently</p><p className="text-[10px] text-gray-500 text-white">Prevent access (fraud flag)</p></div>
+                                    <div className="flex items-center justify-between">
+                                        <div><p className="text-sm font-bold text-white">Block Permanently</p><p className="text-[10px] text-gray-500">Prevent access (fraud flag)</p></div>
                                         <input type="checkbox" checked={userForm.isBlocked} onChange={(e) => setUserForm({...userForm, isBlocked: e.target.checked})} className="w-5 h-5 accent-red-500" />
                                     </div>
                                 </div>
@@ -258,7 +260,7 @@ function AdminDashboard() {
                 )}
             </AnimatePresence>
 
-            {/* MODAL: CATEGORY CREATE/EDIT */}
+            {/* CATEGORY MODAL */}
             <AnimatePresence>
                 {isCategoryModalOpen && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -266,11 +268,11 @@ function AdminDashboard() {
                         <motion.div initial={{scale:0.95, opacity:0}} animate={{scale:1, opacity:1}} exit={{scale:0.95, opacity:0}} className="bg-gray-900 border border-gray-800 p-8 rounded-[2rem] w-full max-w-md relative z-10 shadow-2xl">
                             <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 text-white"><LayoutGrid className="text-blue-500" /> {modalMode === "create" ? "New Category" : "Edit Category"}</h2>
                             <form onSubmit={handleCategorySubmit} className="space-y-4">
-                                <div className="space-y-1 text-white">
+                                <div className="space-y-1">
                                     <label className="text-[10px] font-bold text-gray-500 uppercase px-1">Name</label>
                                     <input required value={categoryForm.name} onChange={(e) => setCategoryForm({...categoryForm, name: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-xl p-3 text-white outline-none focus:border-blue-500" />
                                 </div>
-                                <div className="space-y-1 text-white">
+                                <div className="space-y-1">
                                     <label className="text-[10px] font-bold text-gray-500 uppercase px-1">Description</label>
                                     <textarea value={categoryForm.description} onChange={(e) => setCategoryForm({...categoryForm, description: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-xl p-3 h-32 text-white outline-none" />
                                 </div>

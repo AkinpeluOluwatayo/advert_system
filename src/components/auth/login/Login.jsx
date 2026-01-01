@@ -15,6 +15,7 @@ function Login() {
     const [showPassword, setShowPassword] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [errorToast, setErrorToast] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(""); // 👈 NEW
 
     const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -36,10 +37,27 @@ function Login() {
         }
     }, [isSuccess, user, token, navigate, dispatch]);
 
-    // Handle Error Toast
+    // Handle Error Toast - 👈 IMPROVED
     useEffect(() => {
         if (error) {
+            // Convert error codes to friendly messages
+            let friendlyMessage = error;
+
+            if (error.toString().includes("401")) {
+                friendlyMessage = "Wrong email or password. Please try again.";
+            } else if (error.toString().includes("404")) {
+                friendlyMessage = "Account not found. Please check your email.";
+            } else if (error.toString().includes("403")) {
+                friendlyMessage = "Your account has been blocked. Contact support.";
+            } else if (error.toString().includes("500")) {
+                friendlyMessage = "Server error. Please try again later.";
+            } else if (error.toString().includes("Network Error")) {
+                friendlyMessage = "No internet connection. Check your network.";
+            }
+
+            setErrorMessage(friendlyMessage);
             setErrorToast(true);
+
             const timer = setTimeout(() => {
                 setErrorToast(false);
                 dispatch(resetAuthState());
@@ -51,7 +69,7 @@ function Login() {
     return (
         <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 bg-gray-50 dark:bg-slate-900 font-sans relative">
 
-            {/* --- EXTREME FAR RIGHT ADMIN SHORTCUT --- */}
+            {/* ADMIN SHORTCUT */}
             <div className="absolute top-4 right-4 z-[60]">
                 <Link to="/adminauth">
                     <motion.div
@@ -69,7 +87,7 @@ function Login() {
                 </Link>
             </div>
 
-            {/* --- CENTERED TOASTS (Safe from corner overlap) --- */}
+            {/* TOASTS */}
             <AnimatePresence>
                 {showToast && (
                     <motion.div
@@ -88,10 +106,10 @@ function Login() {
                         initial={{ opacity: 0, y: -20, x: "-50%" }}
                         animate={{ opacity: 1, y: 20, x: "-50%" }}
                         exit={{ opacity: 0, y: -20, x: "-50%" }}
-                        className="fixed top-0 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-8 py-3 rounded-xl shadow-2xl z-[70] flex items-center gap-3 font-bold"
+                        className="fixed top-0 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-8 py-3 rounded-xl shadow-2xl z-[70] flex items-center gap-3 font-bold max-w-md"
                     >
                         <AlertCircle size={20} />
-                        <span>{error}</span>
+                        <span>{errorMessage}</span> {/* 👈 CHANGED */}
                         <button onClick={() => setErrorToast(false)} className="ml-2 hover:bg-white/20 rounded-full p-1 transition-colors">
                             <X size={16} />
                         </button>
@@ -163,7 +181,7 @@ function Login() {
                 </div>
             </div>
 
-            {/* RIGHT SIDE: HERO (Desktop only) */}
+            {/* RIGHT SIDE: HERO */}
             <div className="hidden md:flex flex-col justify-center p-16 bg-white dark:bg-slate-900">
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
