@@ -37,12 +37,36 @@ export const loginAdmin = createAsyncThunk(
     }
 );
 
-// 4. LOGOUT ACTION
+// 4. FORGOT PASSWORD ACTION
+export const forgotPasswordUser = createAsyncThunk(
+    "auth/forgotPassword",
+    async (email, { rejectWithValue }) => {
+        try {
+            return await authService.forgotPassword(email);
+        } catch (error) {
+            return rejectWithValue(error.message || "Request Failed");
+        }
+    }
+);
+
+// 5. RESET PASSWORD ACTION (Final Step) 👈 ADDED THIS
+export const resetPasswordUser = createAsyncThunk(
+    "auth/resetPassword",
+    async ({ token, newPassword }, { rejectWithValue }) => {
+        try {
+            return await authService.resetPassword(token, newPassword);
+        } catch (error) {
+            return rejectWithValue(error.message || "Reset Failed");
+        }
+    }
+);
+
+// 6. LOGOUT ACTION
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
     authService.logout();
 });
 
-// 5. ADMIN LOGOUT ACTION
+// 7. ADMIN LOGOUT ACTION
 export const logoutAdmin = createAsyncThunk("auth/adminLogout", async () => {
     authService.adminLogout();
 });
@@ -57,12 +81,14 @@ const authSlice = createSlice({
         loading: false,
         error: null,
         isSuccess: false,
+        message: null,
     },
     reducers: {
         resetAuthState: (state) => {
             state.loading = false;
             state.error = null;
             state.isSuccess = false;
+            state.message = null;
         },
     },
     extraReducers: (builder) => {
@@ -109,6 +135,34 @@ const authSlice = createSlice({
                 state.adminToken = action.payload.token;
             })
             .addCase(loginAdmin.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            // FORGOT PASSWORD
+            .addCase(forgotPasswordUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(forgotPasswordUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.isSuccess = true;
+                state.message = "Password reset instructions sent to your email.";
+            })
+            .addCase(forgotPasswordUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            // RESET PASSWORD (Final Step) 👈 ADDED THIS
+            .addCase(resetPasswordUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(resetPasswordUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.isSuccess = true;
+                state.message = "Password has been reset successfully!";
+            })
+            .addCase(resetPasswordUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })

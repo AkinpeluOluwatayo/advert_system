@@ -12,6 +12,8 @@ import UserProfile from "./pages/userprofile/UserProfile.jsx";
 import AdminLogin from "./components/adminAuth/AdminLogin.jsx";
 import AdminDashboard from "./pages/adminpage/AdminDashboard.jsx";
 import AboutUs from "./pages/aboutus/AboutUs.jsx";
+import ForgotPassword from "./components/forgotpassword/ForgotPassword.jsx";
+import ResetPassword from "./components/resetpassword/ResetPassword.jsx";
 
 const PrivateRoute = ({ children }) => {
     const { token } = useSelector((state) => state.auth);
@@ -27,6 +29,12 @@ function App() {
                 <Route path="/aboutus" element={<AboutUs />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
+
+                {/* --- FIXED PATHS --- */}
+                <Route path="/forgotpassword" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                {/* 👆 This now matches your email link location */}
+
                 <Route path="/ViewAllAds" element={<ViewAllAds />} />
                 <Route path="/ProductDetails/:id" element={<ProductDetails />} />
 
@@ -40,7 +48,7 @@ function App() {
                 <Route path="/chat/:chatId" element={<PrivateRoute><ChatPage /></PrivateRoute>} />
 
                 {/* Admin Routes */}
-                <Route path="/admin/login" element={<AdminLogin />} /> {/* 👈 ADD THIS */}
+                <Route path="/admin/login" element={<AdminLogin />} />
                 <Route path="/adminAuth" element={<AdminLogin />} />
                 <Route path="/adminPage" element={<AdminDashboard />} />
             </Routes>
