@@ -1,6 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+
+const RENDER_BASE_URL = "https://dealbridges-connect-yy4x.onrender.com";
+
 export const fetchSingleAd = createAsyncThunk(
     "product/fetchSingleAd",
     async ({ id, token }, { rejectWithValue }) => {
@@ -9,8 +12,6 @@ export const fetchSingleAd = createAsyncThunk(
 
 
             let sanitizedId = id.toString().split(':')[0];
-
-
             sanitizedId = sanitizedId.replace(/[^a-fA-F0-9]/g, "").trim();
 
             console.log("DEBUG: FINAL CLEAN ID ->", sanitizedId);
@@ -23,7 +24,7 @@ export const fetchSingleAd = createAsyncThunk(
             };
 
 
-            const url = `http://localhost:8080/ads/${sanitizedId}`;
+            const url = `${RENDER_BASE_URL}/ads/${sanitizedId}`;
             const res = await axios.get(url, config);
 
             if (res.data && res.data.data && res.data.data.ad) {
@@ -32,7 +33,6 @@ export const fetchSingleAd = createAsyncThunk(
                 return rejectWithValue("Advert data missing in server response");
             }
         } catch (err) {
-
             const message = err.response?.data?.data?.message ||
                 err.response?.data?.message ||
                 err.message ||
