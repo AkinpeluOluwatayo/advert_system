@@ -155,7 +155,7 @@ function AdminLogin() {
                         and inventory distribution cycles.
                     </p>
                 </motion.div>
-            </div> ave my advert app built with java maven spring boot and react front end and i want to deploy it tell me about vercel netlify and rende
+            </div>
         </div>
     );
 }
