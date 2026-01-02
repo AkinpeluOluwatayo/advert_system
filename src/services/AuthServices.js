@@ -1,7 +1,7 @@
 import axios from "axios";
 
 
-const API_URL = "https://dealbridgeconnect-zvjn.onrender.com/auth";
+const API_URL = "https://dealbridges-connect-yy4x.onrender.com/auth";
 
 export const authService = {
     signup: async (data) => {

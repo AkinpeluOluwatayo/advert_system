@@ -1,8 +1,8 @@
 import axios from "axios";
 
 
-const CHAT_URL = "https://dealbridgeconnect-zvjn.onrender.com/chat";
-const MSG_URL = "https://dealbridgeconnect-zvjn.onrender.com/messages";
+const CHAT_URL = "https://dealbridges-connect-yy4x.onrender.com/chat";
+const MSG_URL = "https://dealbridges-connect-yy4x.onrender.com/messages";
 
 
 axios.interceptors.request.use(

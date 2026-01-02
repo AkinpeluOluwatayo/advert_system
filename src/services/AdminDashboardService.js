@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const apiClient = axios.create({
 
-    baseURL: "https://dealbridgeconnect-zvjn.onrender.com",
+    baseURL: "https://dealbridges-connect-yy4x.onrender.com",
 });
 
 apiClient.interceptors.request.use((config) => {
