@@ -1,7 +1,8 @@
 import axios from "axios";
 
-const CHAT_URL = "http://localhost:8080/chat";
-const MSG_URL = "http://localhost:8080/messages";
+
+const CHAT_URL = "https://dealbridgeconnect-zvjn.onrender.com/chat";
+const MSG_URL = "https://dealbridgeconnect-zvjn.onrender.com/messages";
 
 
 axios.interceptors.request.use(

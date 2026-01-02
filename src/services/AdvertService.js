@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/ads";
+
+const API_URL = "https://dealbridgeconnect-zvjn.onrender.com/ads";
 
 export const advertServices = {
 
