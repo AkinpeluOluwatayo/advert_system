@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { loginUser, resetAuthState } from "../../../redux/actions/AuthSlice.js";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, EyeOff, AlertCircle, X, ShieldCheck, CheckCircle } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, X, ShieldCheck, CheckCircle, Loader2 } from "lucide-react";
 
 function Login() {
     const navigate = useNavigate();
@@ -15,33 +15,32 @@ function Login() {
     const [showPassword, setShowPassword] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [errorToast, setErrorToast] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(""); // 👈 NEW
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
         dispatch(loginUser(formData));
     };
-
 
     useEffect(() => {
         if (isSuccess && user && token) {
             setShowToast(true);
+
             const timer = setTimeout(() => {
                 setShowToast(false);
                 navigate("/ViewAllAds");
                 dispatch(resetAuthState());
-            }, 1500);
+            }, 800);
             return () => clearTimeout(timer);
         }
     }, [isSuccess, user, token, navigate, dispatch]);
 
     useEffect(() => {
         if (error) {
-
             let friendlyMessage = error;
-
             if (error.toString().includes("401")) {
                 friendlyMessage = "Wrong email or password. Please try again.";
             } else if (error.toString().includes("404")) {
@@ -66,20 +65,20 @@ function Login() {
     }, [error, dispatch]);
 
     return (
-        <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 bg-gray-50 dark:bg-slate-900 font-sans relative">
+        <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 bg-gray-50 dark:bg-slate-900 font-sans relative overflow-hidden">
 
 
             <div className="absolute top-4 right-4 z-[60]">
                 <Link to="/adminauth">
                     <motion.div
-                        whileHover={{ scale: 1.05, x: 2 }}
+                        whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className="group flex items-center gap-2 px-3 py-1.5 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border border-slate-200 dark:border-slate-700 rounded-full cursor-pointer hover:border-blue-600 hover:shadow-lg transition-all shadow-sm"
+                        className="group flex items-center gap-2 px-3 py-1.5 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border border-slate-200 dark:border-slate-700 rounded-full shadow-sm hover:border-blue-600 transition-all"
                     >
-                        <div className="w-6 h-6 rounded-full bg-slate-900 flex items-center justify-center text-amber-400 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                        <div className="w-6 h-6 rounded-full bg-slate-900 flex items-center justify-center text-amber-400 group-hover:bg-blue-600 transition-colors">
                             <ShieldCheck size={12} />
                         </div>
-                        <span className="text-[10px] font-bold tracking-[0.15em] text-slate-500 group-hover:text-blue-600 font-sans uppercase">
+                        <span className="text-[10px] font-bold tracking-[0.15em] text-slate-500 group-hover:text-blue-600 uppercase">
                             Admin Portal
                         </span>
                     </motion.div>
@@ -108,7 +107,7 @@ function Login() {
                         className="fixed top-0 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-8 py-3 rounded-xl shadow-2xl z-[70] flex items-center gap-3 font-bold max-w-md"
                     >
                         <AlertCircle size={20} />
-                        <span>{errorMessage}</span> {/* 👈 CHANGED */}
+                        <span>{errorMessage}</span>
                         <button onClick={() => setErrorToast(false)} className="ml-2 hover:bg-white/20 rounded-full p-1 transition-colors">
                             <X size={16} />
                         </button>
@@ -157,19 +156,24 @@ function Login() {
                         </div>
 
                         <div className="flex justify-end -mt-2">
-                            <Link
-                                to="/forgotpassword"
-                                className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
-                            >
+                            <Link to="/forgotpassword" className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">
                                 Forgot Password?
                             </Link>
                         </div>
 
+
                         <button
                             disabled={loading}
-                            className="bg-blue-600 text-white py-4 rounded-xl font-bold uppercase tracking-widest hover:bg-blue-700 transition transform active:scale-[0.98] disabled:opacity-50 mt-2 shadow-lg shadow-blue-100 dark:shadow-none"
+                            className="flex items-center justify-center gap-2 bg-blue-600 text-white py-4 rounded-xl font-bold uppercase tracking-widest hover:bg-blue-700 transition transform active:scale-[0.98] disabled:opacity-50 mt-2 shadow-lg shadow-blue-100 dark:shadow-none min-h-[60px]"
                         >
-                            {loading ? "Logging in..." : "Login"}
+                            {loading ? (
+                                <>
+                                    <Loader2 className="animate-spin" size={20} />
+                                    <span>Verifying...</span>
+                                </>
+                            ) : (
+                                "Login"
+                            )}
                         </button>
                     </form>
 
@@ -179,6 +183,7 @@ function Login() {
                     </div>
                 </div>
             </div>
+
 
             <div className="hidden md:flex flex-col justify-center p-16 bg-white dark:bg-slate-900">
                 <motion.div

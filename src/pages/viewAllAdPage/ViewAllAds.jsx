@@ -2,39 +2,17 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllAds } from "../../redux/actions/AdvertSlice";
 import { Link, useNavigate } from "react-router-dom";
-import { MapPin, Filter, ChevronLeft, Sun, Moon, LogOut, User } from "lucide-react";
+import { MapPin, Filter, ChevronLeft, Sun, Moon, LogOut, User, Search, RefreshCw, Tag } from "lucide-react";
 
 function ViewAllAdverts() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { ads = [], loading: reduxLoading, error: reduxError } = useSelector(state => state.ads);
 
+
+    const { ads = [], loading, error } = useSelector(state => state.ads);
 
     const [darkMode, setDarkMode] = useState(false);
-
-    useEffect(() => {
-        const savedTheme = localStorage.getItem("theme");
-        if (savedTheme === "dark") {
-            document.documentElement.classList.add("dark");
-            setDarkMode(true);
-        }
-    }, []);
-
-    const toggleDarkMode = () => {
-        if (darkMode) {
-            document.documentElement.classList.remove("dark");
-            localStorage.setItem("theme", "light");
-        } else {
-            document.documentElement.classList.add("dark");
-            localStorage.setItem("theme", "dark");
-        }
-        setDarkMode(!darkMode);
-    };
-
-    const handleLogout = () => {
-        localStorage.clear();
-        navigate("/");
-    };
+    const [showFilters, setShowFilters] = useState(true);
 
 
     const [filters, setFilters] = useState({
@@ -43,234 +21,202 @@ function ViewAllAdverts() {
         minPrice: "",
         maxPrice: "",
     });
-    const [showFilters, setShowFilters] = useState(true);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+
 
     useEffect(() => {
-        const fetchAds = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                await dispatch(getAllAds()).unwrap();
-            } catch (err) {
-                console.error("Error fetching ads:", err);
-                setError("Failed to load adverts.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchAds();
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "dark") {
+            document.documentElement.classList.add("dark");
+            setDarkMode(true);
+        }
+        dispatch(getAllAds());
     }, [dispatch]);
 
-    useEffect(() => {
-        setLoading(reduxLoading);
-        setError(reduxError);
-    }, [reduxLoading, reduxError]);
+    const toggleDarkMode = () => {
+        const isDark = !darkMode;
+        document.documentElement.classList.toggle("dark", isDark);
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+        setDarkMode(isDark);
+    };
 
     const handleFilterChange = (e) => {
         setFilters({ ...filters, [e.target.name]: e.target.value });
     };
 
-    const handleApplyFilters = () => {
-        const filterParams = {
-            keyword: searchQuery || filters.keyword,
-            location: filters.location,
-            minPrice: filters.minPrice,
-            maxPrice: filters.maxPrice,
-        };
-        dispatch(getAllAds(filterParams));
-    };
-
-    const handleSearchSubmit = (e) => {
-        e.preventDefault();
-        handleApplyFilters();
+    const handleApplyFilters = (e) => {
+        if (e) e.preventDefault();
+        dispatch(getAllAds(filters));
     };
 
     const handleClearFilters = () => {
-        setFilters({ keyword: "", location: "", minPrice: "", maxPrice: "" });
-        setSearchQuery("");
-        dispatch(getAllAds());
+        const cleared = { keyword: "", location: "", minPrice: "", maxPrice: "" };
+        setFilters(cleared);
+        dispatch(getAllAds(cleared));
+    };
+
+    const handleLogout = () => {
+        localStorage.clear();
+        navigate("/");
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300 font-sans">
 
 
-            <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur border-b dark:border-gray-800 sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-
-                    <div className="flex items-center justify-between gap-4">
-                        <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white">
-                            DealBridge<span className="text-blue-600">Connect</span>
-                        </h1>
+            <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b dark:border-gray-800 sticky top-0 z-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+                    <Link to="/" className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white shrink-0">
+                        DealBridge<span className="text-blue-600">Connect</span>
+                    </Link>
 
 
-                        <button
-                            onClick={toggleDarkMode}
-                            className="p-2 rounded-xl border dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition md:hidden"
-                        >
-                            {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-                        </button>
-                    </div>
-
-                    <form onSubmit={handleSearchSubmit} className="flex gap-2 flex-1 max-w-md">
+                    <div className="hidden md:flex relative flex-1 max-w-md mx-4">
                         <input
                             type="text"
-                            placeholder="Search adverts..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-600 outline-none transition w-full"
+                            name="keyword"
+                            placeholder="Quick search..."
+                            value={filters.keyword}
+                            onChange={handleFilterChange}
+                            onKeyDown={(e) => e.key === 'Enter' && handleApplyFilters()}
+                            className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 transition"
                         />
-                        <button
-                            type="submit"
-                            className="px-4 py-2 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition"
-                        >
-                            Search
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <button onClick={toggleDarkMode} className="p-2.5 rounded-xl border dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition text-gray-500">
+                            {darkMode ? <Sun size={20} /> : <Moon size={20} />}
                         </button>
-                    </form>
-
-                    <div className="flex items-center gap-2 sm:gap-3">
-
-                        <button
-                            onClick={toggleDarkMode}
-                            className="hidden md:flex p-2 rounded-xl border dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-                        >
-                            {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-                        </button>
-
-                        <Link
-                            to="/CreateAdvert"
-                            className="px-4 py-2 bg-green-600 text-white rounded-xl text-xs sm:text-sm font-semibold hover:bg-green-700 transition shadow"
-                        >
+                        <Link to="/CreateAdvert" className="hidden sm:block px-4 py-2 bg-green-600 text-white rounded-xl text-sm font-bold hover:bg-green-700 transition shadow-sm active:scale-95">
                             + Create
                         </Link>
-
-                        <button
-                            onClick={() => navigate("/UserProfile")}
-                            className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-semibold hover:bg-blue-700 transition shadow"
-                        >
-                            <User size={14} />
-                            <span className="hidden xs:inline">Profile</span>
+                        <button onClick={() => navigate("/UserProfile")} className="p-2.5 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition shadow active:scale-95">
+                            <User size={20} />
                         </button>
-
-                        <button
-                            onClick={handleLogout}
-                            className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 rounded-xl bg-red-500 text-white text-xs sm:text-sm font-semibold hover:bg-red-600 transition shadow"
-                        >
-                            <LogOut size={14} />
-                            <span className="hidden xs:inline">Logout</span>
+                        <button onClick={handleLogout} className="p-2.5 rounded-xl bg-red-500 text-white hover:bg-red-600 transition shadow active:scale-95">
+                            <LogOut size={20} />
                         </button>
                     </div>
                 </div>
-            </div>
+            </header>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 flex flex-col lg:flex-row gap-8 relative">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col lg:flex-row gap-8">
 
 
-                <aside className="relative flex-shrink-0">
-                    <button
-                        className="absolute -right-5 top-0 flex items-center justify-center w-10 h-10 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition z-20"
-                        onClick={() => setShowFilters(!showFilters)}
-                    >
-                        {showFilters ? <ChevronLeft size={20} /> : <Filter size={20} />}
-                    </button>
+                <aside className="lg:w-72 shrink-0">
+                    <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-sm border dark:border-gray-800 p-6 sticky top-24">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="font-bold text-lg dark:text-white flex items-center gap-2">
+                                <Filter size={18} className="text-blue-600" /> Filters
+                            </h2>
+                            <button onClick={handleClearFilters} className="text-xs font-bold text-blue-600 hover:text-blue-700">Reset</button>
+                        </div>
 
-                    <div
-                        className={`bg-white dark:bg-gray-900 p-6 rounded-3xl shadow transition-all duration-300 overflow-hidden ${
-                            showFilters ? "w-64 opacity-100" : "w-0 opacity-0 p-0"
-                        }`}
-                    >
-                        {showFilters && (
-                            <div className="space-y-6">
-                                <h2 className="font-bold text-lg text-gray-900 dark:text-white mb-4">Filters</h2>
-                                <div className="flex flex-col">
-                                    <label className="text-xs font-semibold text-gray-500 uppercase mb-2">Location</label>
+                        <form onSubmit={handleApplyFilters} className="space-y-5">
+
+                            <div className="flex flex-col">
+                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Keyword</label>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        name="keyword"
+                                        value={filters.keyword}
+                                        onChange={handleFilterChange}
+                                        placeholder="What are you looking for?"
+                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border dark:border-gray-700 dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 text-sm transition"
+                                    />
+                                    <Tag className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col">
+                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Location</label>
+                                <div className="relative">
                                     <input
                                         type="text"
                                         name="location"
                                         value={filters.location}
                                         onChange={handleFilterChange}
                                         placeholder="City or State"
-                                        className="px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-600 outline-none transition"
+                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border dark:border-gray-700 dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 text-sm transition"
                                     />
-                                </div>
-                                <div className="flex flex-col">
-                                    <label className="text-xs font-semibold text-gray-500 uppercase mb-2">Price Min</label>
-                                    <input
-                                        type="number"
-                                        name="minPrice"
-                                        value={filters.minPrice}
-                                        onChange={handleFilterChange}
-                                        placeholder="₦ Min"
-                                        className="px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-600 outline-none transition"
-                                    />
-                                </div>
-                                <div className="flex flex-col">
-                                    <label className="text-xs font-semibold text-gray-500 uppercase mb-2">Price Max</label>
-                                    <input
-                                        type="number"
-                                        name="maxPrice"
-                                        value={filters.maxPrice}
-                                        onChange={handleFilterChange}
-                                        placeholder="₦ Max"
-                                        className="px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-600 outline-none transition"
-                                    />
-                                </div>
-                                <div className="flex gap-2 pt-4">
-                                    <button onClick={handleApplyFilters} className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition">Apply</button>
-                                    <button onClick={handleClearFilters} className="flex-1 px-4 py-2 bg-gray-600 text-white rounded-xl font-semibold hover:bg-gray-700 transition">Clear</button>
+                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                                 </div>
                             </div>
-                        )}
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="flex flex-col">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Min ₦</label>
+                                    <input type="number" name="minPrice" value={filters.minPrice} onChange={handleFilterChange} placeholder="0" className="w-full px-3 py-2.5 rounded-xl border dark:border-gray-700 dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 text-sm" />
+                                </div>
+                                <div className="flex flex-col">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Max ₦</label>
+                                    <input type="number" name="maxPrice" value={filters.maxPrice} onChange={handleFilterChange} placeholder="Max" className="w-full px-3 py-2.5 rounded-xl border dark:border-gray-700 dark:bg-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-600 text-sm" />
+                                </div>
+                            </div>
+
+                            <button type="submit" className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-100 dark:shadow-none active:scale-[0.97]">
+                                Apply Filters
+                            </button>
+                        </form>
                     </div>
                 </aside>
 
 
                 <main className="flex-1">
-                    {loading && (
-                        <div className="flex justify-center items-center py-20">
+                    {loading ? (
+                        <div className="flex flex-col justify-center items-center py-32 gap-4">
                             <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                            <p className="text-gray-500 font-medium animate-pulse">Finding the best deals...</p>
                         </div>
-                    )}
-
-                    {error && (
-                        <p className="text-center text-red-500 font-medium">{error}</p>
-                    )}
-
-                    {!loading && !error && ads.length === 0 && (
-                        <div className="text-center py-20">
-                            <p className="text-gray-400 text-xl mb-4">No adverts found.</p>
-                            <Link to="/CreateAdvert" className="inline-block px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition">Create First Advert</Link>
+                    ) : error ? (
+                        <div className="bg-red-50 dark:bg-red-900/10 border border-red-100 p-8 rounded-3xl text-center">
+                            <p className="text-red-500 font-bold mb-4">{error}</p>
+                            <button onClick={() => dispatch(getAllAds())} className="px-6 py-2 bg-red-600 text-white rounded-xl">Try Again</button>
                         </div>
-                    )}
-
-                    {!loading && !error && ads.length > 0 && (
-                        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-8">
+                    ) : ads.length === 0 ? (
+                        <div className="text-center py-32">
+                            <Search className="mx-auto text-gray-300 mb-4" size={48} />
+                            <p className="text-gray-400 text-xl font-medium">No results found.</p>
+                            <button onClick={handleClearFilters} className="mt-4 text-blue-600 font-bold hover:underline">Clear all filters</button>
+                        </div>
+                    ) : (
+                        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                             {ads.map((ad, index) => (
-                                <div key={ad.id || ad._id || index} className="group bg-white dark:bg-gray-900 rounded-3xl overflow-hidden shadow hover:shadow-2xl transition-all duration-300 border dark:border-gray-800">
-                                    <div className="relative h-52 overflow-hidden">
+                                <Link
+                                    to={`/ProductDetails/${ad.id || ad._id}`}
+                                    key={ad.id || ad._id || index}
+                                    className="group bg-white dark:bg-gray-900 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-800 flex flex-col"
+                                >
+
+                                    <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-800">
                                         {ad.images?.[0] ? (
-                                            <img src={ad.images[0]} alt={ad.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                            <img
+                                                src={ad.images[0]}
+                                                alt={ad.title}
+                                                loading="lazy"
+                                                decoding="async"
+                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                            />
                                         ) : (
-                                            <div className="w-full h-full bg-gray-800 flex items-center justify-center text-gray-500">No Image</div>
+                                            <div className="w-full h-full flex items-center justify-center text-gray-400 font-bold uppercase">No Image</div>
                                         )}
-                                        <span className="absolute top-4 left-4 bg-blue-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold shadow">
-                                            ₦{ad.price?.toLocaleString() || '0'}
-                                        </span>
+                                        <div className="absolute top-3 left-3 bg-blue-600/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                                            ₦{ad.price?.toLocaleString()}
+                                        </div>
                                     </div>
 
-                                    <div className="p-6">
-                                        <h3 className="text-lg font-bold mb-2 text-gray-900 dark:text-white group-hover:text-blue-600 transition truncate">{ad.title}</h3>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 line-clamp-2">{ad.description}</p>
-                                        <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-6">
-                                            <MapPin size={16} className="mr-1" />{ad.location || "Nigeria"}
+                                    <div className="p-5 flex flex-col flex-1">
+                                        <h3 className="text-md font-bold text-gray-900 dark:text-white group-hover:text-blue-600 transition truncate mb-1">{ad.title}</h3>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-4 flex-1 leading-relaxed">{ad.description}</p>
+                                        <div className="flex items-center justify-between mt-auto pt-4 border-t dark:border-gray-800">
+                                            <div className="flex items-center text-xs text-gray-400 font-medium">
+                                                <MapPin size={14} className="mr-1 text-blue-600" />{ad.location || "Nigeria"}
+                                            </div>
+                                            <span className="text-xs font-bold text-blue-600 group-hover:translate-x-1 transition-transform">Details &rarr;</span>
                                         </div>
-                                        <Link to={`/ProductDetails/${ad.id}`} className="block text-center px-5 py-3 rounded-xl bg-gray-900 dark:bg-gray-800 text-white font-semibold hover:bg-blue-600 transition">View Details</Link>
                                     </div>
-                                </div>
+                                </Link>
                             ))}
                         </div>
                     )}
