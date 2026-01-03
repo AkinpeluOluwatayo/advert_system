@@ -30,7 +30,7 @@ function Login() {
             setShowToast(true);
             const timer = setTimeout(() => {
                 setShowToast(false);
-                navigate("/dashboard");
+                navigate("/viewAllAdPage");
                 dispatch(resetAuthState());
             }, 1500);
             return () => clearTimeout(timer);
