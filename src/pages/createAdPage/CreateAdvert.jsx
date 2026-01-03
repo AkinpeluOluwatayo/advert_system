@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react"; // Added useEffect
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { createAd } from "../../redux/actions/AdvertSlice";
@@ -21,18 +21,28 @@ const CreateAdvert = () => {
     const [imagePreview, setImagePreview] = useState(null);
     const [imageBase64, setImageBase64] = useState("");
 
+
+    const [darkMode, setDarkMode] = useState(false);
+
     const [formData, setFormData] = useState({
         title: "", description: "", price: "", location: "",
         status: "AVAILABLE", images: [],
     });
 
-    const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
+    useEffect(() => {
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "dark") {
+            setDarkMode(true);
+            document.documentElement.classList.add("dark");
+        }
+    }, []);
+
+    const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
-
 
         setImagePreview(URL.createObjectURL(file));
 
@@ -57,7 +67,6 @@ const CreateAdvert = () => {
             await dispatch(createAd({ adData: payload, token })).unwrap();
             toast.success("Advert created successfully!");
 
-
             setTimeout(() => navigate("/userprofile"), 1200);
         } catch (err) {
             const errorStr = err?.toString() || "";
@@ -80,7 +89,6 @@ const CreateAdvert = () => {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-white dark:bg-gray-900 p-6 md:p-10 rounded-[2.5rem] w-full max-w-xl shadow-2xl shadow-blue-500/5 border border-gray-100 dark:border-gray-800"
             >
-
                 <div className="flex items-center justify-between mb-8">
                     <div>
                         <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Post Advert</h2>
@@ -206,6 +214,8 @@ const CreateAdvert = () => {
                     </AnimatePresence>
                 </form>
             </motion.div>
+
+
             <ToastContainer position="top-center" theme={darkMode ? "dark" : "light"} />
         </div>
     );
